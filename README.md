@@ -45,9 +45,46 @@ hugo new content --contentDir content/en --kind author authors/author-slug/_inde
 hugo new content --contentDir content/pt-br --kind author authors/author-slug/_index.md
 ```
 
-Every article must keep `type = "post"` and must list at least one author profile slug in the `authors` array. Categories are curated, tags are flexible, and series are optional. New articles default to `toc = true`; set it to `false` on an individual article when needed.
+Every article must keep `type = "post"` and must list at least one author profile term in the `authors` array. Decap fills this with the selected profile title. Categories are curated, tags are flexible, and series are optional. New articles default to `toc = true`; set it to `false` on an individual article when needed.
 
 The media archetype includes guidance for optional covers and alt text, audio, math, syntax highlighting, and redaction history. Advanced Brewm shortcodes and external libraries should be enabled only by content that needs them.
+
+## Media guidelines
+
+Store article media beside `index.md` in the article page bundle and author portraits beside the profile's `_index.md`. Decap does this automatically. Use lowercase ASCII filenames with hyphens, such as `aurora-shooting-star.webp`, and avoid spaces or version suffixes such as `final-2`.
+
+### Recommended image sizes
+
+| Use | Recommended size | Minimum | Notes |
+| --- | ---: | ---: | --- |
+| General-purpose post cover | 2400 × 1600 px | 1600 × 1067 px | A 3:2 master provides enough room for the different crops used by the site. |
+| Cover composed for the article page | 2000 × 1600 px | 1500 × 1200 px | The article view uses a 5:4 crop. |
+| Cover composed for listings and social cards | 2400 × 1260 px | 1200 × 630 px | Post cards use approximately 1.9:1, which also suits common social previews. |
+| Full-width inline image | 2000 px wide | 1400 px wide | Keep the natural aspect ratio unless a deliberate crop is required. |
+| Half-width inline image | 1200 px wide | 800 px wide | Suitable for supporting artwork, charts, and screenshots. |
+| Author portrait | 800 × 800 px | 400 × 400 px | Use a square source; the site displays it as a small circle. |
+
+The post page and post list use different cover ratios. Keep faces, card text, and other important details within the central 60% of the master image so both the 5:4 article crop and 1.9:1 listing crop remain useful. Avoid placing essential text or logos near an edge.
+
+For author portraits, use a tightly framed head-and-shoulders image with the face centered and clear space around it. Avoid text, detailed backgrounds, borders, or a circle baked into the source image; the theme applies the circular crop. Use the same portrait in both languages unless localization has a specific editorial reason to differ.
+
+### Formats and file-size targets
+
+- Prefer WebP for photographs and illustrations. JPEG is acceptable when a WebP source is unavailable.
+- Use PNG only for transparency, diagrams, or screenshots that need lossless edges. Use SVG only for trusted, repository-owned vector artwork.
+- Export raster images in the sRGB color space and remove unnecessary metadata.
+- Keep post covers below 500 KB when practical and never above 1 MB without a documented reason.
+- Keep author portraits below 150 KB and ordinary inline images below 300–500 KB.
+- Do not commit multi-megabyte camera or print originals; retain those in an external archive and publish an optimized derivative.
+
+### Accessibility and editorial checks
+
+- Always complete the `alt` field for meaningful covers, portraits, diagrams, and screenshots. Describe the useful visual information without starting with “image of.”
+- Use empty alt text only when an image is genuinely decorative and conveys no information.
+- Translate alt text along with the article. Do not copy English alt text into the Portuguese version unless the wording is intentionally shared.
+- Put detailed explanations, data, or transcribed text in the article body or a caption rather than trying to fit everything into alt text.
+- Confirm that the publication has permission to use the image and add an artist, photographer, source, or license credit where required.
+- Preview both the article page and the article listing at desktop and mobile sizes before publishing.
 
 ## Translations
 
