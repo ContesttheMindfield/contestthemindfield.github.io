@@ -7,6 +7,25 @@ body {
   max-width: none;
   margin: 0;
   padding: 0;
+  background-color: var(--bg);
+}
+
+body[data-scheme="light"] {
+  --off: #000;
+  --ac: #03b;
+  --bg: #f9f9f9;
+  --fg: #111;
+  --mid: #545454;
+  color: var(--fg);
+}
+
+body[data-scheme="dark"] {
+  --off: #fff;
+  --ac: #fa0;
+  --bg: #111;
+  --fg: #f9f9f9;
+  --mid: #9e9e9e;
+  color: var(--fg);
 }
 
 .sveltia-preview {
