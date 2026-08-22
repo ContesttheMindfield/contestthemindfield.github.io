@@ -18,13 +18,3 @@
         data-bionRead-safe
         >{{ .Title }}</h1>
 {{- end }}
-
-{{- if $isPost -}}
-    {{- $cover := partial "page/cover.html" (dict "page" .) -}}
-    {{- $alt := or .Params.alt .Params.coverAlt .Params.imagesAlt -}}
-    {{- with $cover }}
-        <figure id="doc-cover">
-            <img src="{{ . }}" alt="{{ with $alt }}{{ . }}{{ else }}{{ i18n "featuredImg" }}: {{ $.Title }}{{ end }}">
-        </figure>
-    {{- end }}
-{{- end }}

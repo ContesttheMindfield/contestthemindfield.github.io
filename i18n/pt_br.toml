@@ -5,6 +5,9 @@
   one = 'Autor'
   other = 'Autores'
 
+[atTime]
+  other = 'às'
+
 [posts]
   one = 'Artigo'
   other = 'Artigos'

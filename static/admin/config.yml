@@ -64,6 +64,11 @@ collections:
         widget: text
         required: false
         hint: A concise summary used in article listings and metadata.
+      - label: Subtitle
+        name: subtitle
+        widget: string
+        required: false
+        hint: Optional subtitle displayed below the article title.
       - label: Authors
         name: authors
         widget: relation
@@ -204,6 +209,11 @@ collections:
         widget: text
         required: false
         hint: Um resumo curto usado nas listas de artigos e nos metadados.
+      - label: Subtítulo
+        name: subtitle
+        widget: string
+        required: false
+        hint: Subtítulo opcional exibido abaixo do título do artigo.
       - label: Autores
         name: authors
         widget: relation
@@ -330,6 +340,11 @@ collections:
         name: name
         widget: string
         hint: Usually the same as the title; retained for theme and metadata compatibility.
+      - label: Flair
+        name: flair
+        widget: string
+        required: false
+        hint: Optional short tagline displayed beside this author's portrait on articles.
       - label: Draft
         name: draft
         widget: boolean
@@ -379,6 +394,11 @@ collections:
         name: name
         widget: string
         hint: Normalmente igual ao título; mantido para compatibilidade com o tema e os metadados.
+      - label: Destaque
+        name: flair
+        widget: string
+        required: false
+        hint: Frase curta opcional exibida ao lado do retrato deste autor nos artigos.
       - label: Rascunho
         name: draft
         widget: boolean

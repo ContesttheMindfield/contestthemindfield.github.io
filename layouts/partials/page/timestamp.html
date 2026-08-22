@@ -1,0 +1,33 @@
+{{- $dateMachine := "2006-01-02T15:04:05-07:00" -}}
+{{- $dateOnly := "2006-01-02" -}}
+{{- $published := .PublishDate -}}
+{{- $modified := .Lastmod -}}
+
+{{- range .Params.history -}}
+    {{- with .date -}}
+        {{- $historyDate := time.AsTime . -}}
+        {{- if $historyDate.After $modified -}}
+            {{- $modified = $historyDate -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+
+{{- $hasMod := $modified.After $published -}}
+{{- if $hasMod -}}
+    {{- $sameDay := eq ($published.Format $dateOnly) ($modified.Format $dateOnly) -}}
+    {{- $clockFormat := cond (eq .Language.Lang "en") "3:04 PM" "15:04" -}}
+    <div id="timestamp">
+        <span>{{ i18n "published" }} {{ i18n "on" | lower }}</span>
+        <time datetime="{{ $published.Format $dateMachine }}">
+            {{- $published | time.Format ":date_long" -}}
+            {{- if $sameDay }} {{ i18n "atTime" }} {{ $published | time.Format $clockFormat }}{{ end -}}
+        </time>,
+        <span>{{ i18n "modified" | lower }} {{ i18n "on" | lower }}</span>
+        <time datetime="{{ $modified.Format $dateMachine }}">
+            {{- $modified | time.Format ":date_long" -}}
+            {{- if $sameDay }} {{ i18n "atTime" }} {{ $modified | time.Format $clockFormat }}{{ end -}}
+        </time>.
+    </div>
+{{- else -}}
+    <time datetime="{{ $published.Format $dateMachine }}">{{- $published | time.Format ":date_long" -}}</time>
+{{- end -}}

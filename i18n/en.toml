@@ -4,3 +4,13 @@
 [authors]
   one = 'Author'
   other = 'Authors'
+
+[atTime]
+  other = 'at'
+
+[posts]
+  one = 'Article'
+  other = 'Articles'
+
+[recent]
+  other = 'Recent Articles'

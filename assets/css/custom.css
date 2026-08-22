@@ -14,19 +14,6 @@
   font-size: min(calc(27pt * var(--fontScale)), 7.5cqi);
 }
 
-#doc-cover {
-  margin: 1rem 0 0;
-  width: 100%;
-}
-
-#doc-cover > img {
-  display: block;
-  margin: 0;
-  width: 100%;
-  max-height: 70vh;
-  object-fit: cover;
-}
-
 @media (max-width: 640px) {
   #logo #logotype {
     width: 100%;

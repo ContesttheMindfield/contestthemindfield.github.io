@@ -162,15 +162,14 @@
                     <div role="feed" aria-busy="false" aria-labelledby="list-post-heading">
                     {{- range $index, $page := $paginator.Pages }}
                         {{- $counter := add $index 1 }}
-                        {{- $author := default site.Params.Author.name .Params.author }}
-                        {{- $authors := or (.GetTerms "authors") (.GetTerms "author") }}
+                        {{- $authors := .GetTerms "authors" }}
                         {{- $categories := .GetTerms "categories" }}
                         {{- $stage := .GetTerms "stage" }}
                         {{- $desc := or .Params.Subtitle .Params.Description .Description .Summary }}
                         {{- $hasCover := partial "page/cover.html" (dict "page" .) }}
                         {{- $alt := or .Params.Alt .Params.coverAlt .Params.imagesAlt }}
                         {{- if $index }}<hr class="ldots" role="presentation" aria-hidden="true">{{- end }}
-                        {{ template "card" (dict "page" $page "paginator" $paginator "counter" $counter "desc" $desc "hasCover" $hasCover "alt" $alt "author" $author "authors" $authors "stage" $stage "PublishDate" .PublishDate) }}
+                        {{ template "card" (dict "page" $page "paginator" $paginator "counter" $counter "desc" $desc "hasCover" $hasCover "alt" $alt "authors" $authors "stage" $stage "PublishDate" .PublishDate) }}
                     {{- end }}
                     </div>
                     {{/*
@@ -260,10 +259,8 @@
             <div>
                 <time datetime="{{ .page.PublishDate.Format "2006-01-02T15:04:05-07:00" }}">{{- .PublishDate | time.Format ":date_long" -}}</time>
                 <span>
-                    {{- if .authors }}
-                        {{ partial "terms.html" (dict "taxonomy" "author" "type" "delimiter" "tabindex" "-1" "page" .page) }}
-                    {{- else }}
-                        {{- with .author }}<span>{{ . }}</span>{{ end }}
+                    {{- with .authors }}
+                        {{ partial "terms.html" (dict "taxonomy" "authors" "type" "delimiter" "tabindex" "-1" "page" $.page) }}
                     {{- end }}
                     {{- if .page.Params.categories }}
                         <span>{{ i18n "in" | lower }}</span>
