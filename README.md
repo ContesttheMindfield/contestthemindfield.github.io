@@ -25,6 +25,10 @@ npx pagefind --site public --serve
 
 The second command serves the indexed `public` directory. The no-JavaScript search fallback uses DuckDuckGo.
 
+### Edit content with Sveltia CMS locally
+
+Start Hugo, then open `http://localhost:1313/admin/index.html` in Chrome, Edge, or another Chromium-based browser. Choose **Work with Local Repository** and select this repository's root directory. Sveltia writes changes directly to the working tree; review them with Git, then commit and push them normally. Local repository editing does not require Netlify or a CMS proxy server.
+
 ## Create content
 
 Articles are page bundles under `content/<language>/articles/<slug>/`. Select the language explicitly in the path:
@@ -45,13 +49,13 @@ hugo new content --contentDir content/en --kind author authors/author-slug/_inde
 hugo new content --contentDir content/pt-br --kind author authors/author-slug/_index.md
 ```
 
-Every article must keep `type = "post"` and must list at least one author profile term in the `authors` array. Decap fills this with the selected profile title. Categories are curated, tags are flexible, and series are optional. New articles default to `toc = true`; set it to `false` on an individual article when needed.
+Every article must keep `type = "post"` and must list at least one author profile term in the `authors` array. Sveltia CMS fills this with the selected profile title. Categories are curated, tags are flexible, and series are optional. New articles default to `toc = true`; set it to `false` on an individual article when needed.
 
 The media archetype includes guidance for optional covers and alt text, audio, math, syntax highlighting, and redaction history. Advanced Brewm shortcodes and external libraries should be enabled only by content that needs them.
 
 ## Media guidelines
 
-Store article media beside `index.md` in the article page bundle and author portraits beside the profile's `_index.md`. Decap does this automatically. Use lowercase ASCII filenames with hyphens, such as `aurora-shooting-star.webp`, and avoid spaces or version suffixes such as `final-2`.
+Store article media beside `index.md` in the article page bundle and author portraits beside the profile's `_index.md`. Sveltia CMS does this automatically. Use lowercase ASCII filenames with hyphens, such as `aurora-shooting-star.webp`, and avoid spaces or version suffixes such as `final-2`.
 
 ### Recommended image sizes
 
@@ -117,6 +121,10 @@ npm run build:search
 ```
 
 GitHub Pages runs the same sequence: it checks out the pinned submodule, installs the lockfile dependencies, builds with Hugo 0.165 using garbage collection and minification, runs Pagefind, and uploads `public`.
+
+GitHub Pages is the canonical production host. The connected Netlify site supplies GitHub OAuth for Sveltia CMS and deploy previews for pull requests; it is not the canonical site. Editors use `https://contestthemindfield.github.io/admin/` and sign in through the existing Netlify-mediated GitHub OAuth flow.
+
+The admin page intentionally loads the unversioned `https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js` bundle, so it tracks the latest Sveltia CMS release automatically. If an upstream release causes a regression, temporarily pin the CDN URL and the matching configuration schema to the last known-good version until the issue is resolved.
 
 ## Update Brewm manually
 
