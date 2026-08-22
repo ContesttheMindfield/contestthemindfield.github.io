@@ -16,7 +16,7 @@ history:
   - date: 2026-08-22T18:00:00.000-03:00
     author: Contest the Mindfield
     note: Published
-  - date: 2026-08-22T19:41
+  - date: 2026-08-22T19:41:00.000-03:00
     author: Contest the Mindfield
     note: Testing editing posts.
 ---
