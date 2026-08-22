@@ -48,6 +48,8 @@ collections:
       - label: Publication date
         name: date
         widget: datetime
+        format: YYYY-MM-DDTHH:mm:ss.SSSZ
+        input_timezone: America/Sao_Paulo
       - label: Draft
         name: draft
         widget: boolean
@@ -152,6 +154,8 @@ collections:
           - label: Date
             name: date
             widget: datetime
+            format: YYYY-MM-DDTHH:mm:ss.SSSZ
+            input_timezone: America/Sao_Paulo
           - label: Author
             name: author
             widget: string
@@ -184,6 +188,8 @@ collections:
       - label: Data de publicação
         name: date
         widget: datetime
+        format: YYYY-MM-DDTHH:mm:ss.SSSZ
+        input_timezone: America/Sao_Paulo
       - label: Rascunho
         name: draft
         widget: boolean
@@ -288,6 +294,8 @@ collections:
           - label: Data
             name: date
             widget: datetime
+            format: YYYY-MM-DDTHH:mm:ss.SSSZ
+            input_timezone: America/Sao_Paulo
           - label: Autor
             name: author
             widget: string
