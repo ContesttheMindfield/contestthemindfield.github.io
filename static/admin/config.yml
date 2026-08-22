@@ -4,6 +4,7 @@ backend:
   branch: main
   squash_merges: true
   site_domain: contestthemindfield.netlify.app
+  site_url: https://contestthemindfield.github.io/
   preview_context: deploy-preview
 
 publish_mode: editorial_workflow
