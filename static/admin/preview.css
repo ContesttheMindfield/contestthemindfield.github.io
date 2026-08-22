@@ -1,0 +1,33 @@
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.decap-preview {
+  min-height: 100vh;
+  padding-block: 2rem;
+}
+
+.decap-preview #main-article {
+  margin-inline: auto;
+}
+
+.decap-preview #doc-author .author {
+  color: inherit;
+}
+
+.decap-preview #keywords span + span {
+  margin-inline-start: 0;
+}
+
+@media (max-width: 640px) {
+  .decap-preview {
+    padding-block: 1rem;
+  }
+}

@@ -4,12 +4,12 @@ backend:
   branch: main
   squash_merges: true
   site_domain: contestthemindfield.netlify.app
-  site_url: https://contestthemindfield.github.io/
+  preview_context: deploy-preview
 
 publish_mode: editorial_workflow
 local_backend: true
 
-
+site_url: https://contestthemindfield.github.io/
 display_url: https://contestthemindfield.github.io/
 
 media_folder: static/uploads
@@ -75,22 +75,34 @@ collections:
         widget: list
         required: false
         default: []
-        hint: Use established category names consistently.
+        hint: >-
+          Broad subject areas readers can browse, such as Philosophy or Psychology.
+          Usually choose only one or two and reuse existing spelling and capitalization.
       - label: Tags
         name: tags
         widget: list
         required: false
         default: []
+        hint: >-
+          Specific topics or keywords covered by this article, such as critical thinking
+          or cognitive biases. Tags should be narrower than categories; reuse existing terms
+          instead of creating near-duplicates.
       - label: Series
         name: series
         widget: list
         required: false
         default: []
+        hint: >-
+          Add a series only when this article belongs to a connected sequence. Use the exact
+          same series name on every installment, and leave this empty for standalone articles.
       - label: Translation key
         name: translationKey
         widget: string
         required: false
-        hint: Use the same non-empty value on the Portuguese translation.
+        hint: >-
+          Language-neutral ID that links this article to its Portuguese translation. Enter
+          exactly the same unique value in both versions—for example, how-beliefs-change.
+          Do not translate or change the key; leave it empty when no translated version exists.
       - label: Show table of contents
         name: toc
         widget: boolean
@@ -199,22 +211,34 @@ collections:
         widget: list
         required: false
         default: []
-        hint: Use os nomes de categorias existentes de forma consistente.
+        hint: >-
+          Áreas amplas pelas quais leitores podem navegar, como Filosofia ou Psicologia.
+          Normalmente escolha apenas uma ou duas e reutilize a grafia e capitalização existentes.
       - label: Tags
         name: tags
         widget: list
         required: false
         default: []
+        hint: >-
+          Tópicos ou palavras-chave específicos abordados pelo artigo, como pensamento crítico
+          ou vieses cognitivos. Tags devem ser mais específicas que categorias; reutilize termos
+          existentes em vez de criar variações quase iguais.
       - label: Séries
         name: series
         widget: list
         required: false
         default: []
+        hint: >-
+          Adicione uma série somente quando o artigo fizer parte de uma sequência relacionada.
+          Use exatamente o mesmo nome em todas as partes e deixe vazio para artigos independentes.
       - label: Chave de tradução
         name: translationKey
         widget: string
         required: false
-        hint: Use o mesmo valor não vazio na tradução em inglês.
+        hint: >-
+          ID neutro de idioma que liga este artigo à tradução em inglês. Digite exatamente o
+          mesmo valor único nas duas versões—por exemplo, how-beliefs-change. Não traduza nem
+          altere a chave; deixe em branco quando não existir uma versão traduzida.
       - label: Mostrar sumário
         name: toc
         widget: boolean
@@ -301,7 +325,10 @@ collections:
         name: translationKey
         widget: string
         required: false
-        hint: Use the same non-empty value on the Portuguese profile.
+        hint: >-
+          Language-neutral ID that links this profile to its Portuguese version. Enter exactly
+          the same unique value in both profiles—for example, contest-the-mindfield. Do not
+          translate or change the key; leave it empty when no translated profile exists.
       - label: Portrait
         name: cover
         widget: image
@@ -347,7 +374,10 @@ collections:
         name: translationKey
         widget: string
         required: false
-        hint: Use o mesmo valor não vazio no perfil em inglês.
+        hint: >-
+          ID neutro de idioma que liga este perfil à versão em inglês. Digite exatamente o mesmo
+          valor único nos dois perfis—por exemplo, contest-the-mindfield. Não traduza nem altere
+          a chave; deixe em branco quando não existir um perfil traduzido.
       - label: Retrato
         name: cover
         widget: image

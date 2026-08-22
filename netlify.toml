@@ -1,5 +1,7 @@
 [build]
-  command = "npm run build"
+  command = "npm run build:search"
   publish = "public"
-[context.production.environment]
-  HUGO_VERSION = "0.164.0"
+
+[build.environment]
+  HUGO_VERSION = "0.165.0"
+  NODE_VERSION = "22"
