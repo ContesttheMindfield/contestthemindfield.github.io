@@ -53,6 +53,41 @@
     }).format(date);
   }
 
+  function applyPreviewTheme(previewDocument) {
+    if (!previewDocument) {
+      return;
+    }
+
+    var theme = document.documentElement.dataset.theme;
+
+    if (theme !== "light" && theme !== "dark") {
+      theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+
+    previewDocument.documentElement.dataset.theme = theme;
+    previewDocument.documentElement.style.colorScheme = theme;
+
+    if (previewDocument.body) {
+      previewDocument.body.dataset.scheme = theme;
+    }
+  }
+
+  function startPreviewThemeSync(previewDocument) {
+    var observer = new MutationObserver(function () {
+      applyPreviewTheme(previewDocument);
+    });
+
+    applyPreviewTheme(previewDocument);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"]
+    });
+
+    return function () {
+      observer.disconnect();
+    };
+  }
+
   function ArticlePreview(props) {
     var entry = props.entry;
     var locale = props.locale;
@@ -188,28 +223,40 @@
     );
   }
 
-  function articleTemplate(locale) {
+  function previewTemplate(component, extraProps) {
     return createClass({
+      componentDidMount: function () {
+        this.stopPreviewThemeSync = startPreviewThemeSync(this.props.document);
+      },
+      componentDidUpdate: function (previousProps) {
+        if (previousProps.document !== this.props.document) {
+          if (this.stopPreviewThemeSync) {
+            this.stopPreviewThemeSync();
+          }
+          this.stopPreviewThemeSync = startPreviewThemeSync(this.props.document);
+        }
+      },
+      componentWillUnmount: function () {
+        if (this.stopPreviewThemeSync) {
+          this.stopPreviewThemeSync();
+        }
+      },
       render: function () {
-        return h(ArticlePreview, Object.assign({}, this.props, { locale: locale }));
+        return h(component, Object.assign({}, this.props, extraProps));
       }
     });
+  }
+
+  function articleTemplate(locale) {
+    return previewTemplate(ArticlePreview, { locale: locale });
   }
 
   function authorTemplate(fallbackTitle) {
-    return createClass({
-      render: function () {
-        return h(AuthorPreview, Object.assign({}, this.props, { fallbackTitle: fallbackTitle }));
-      }
-    });
+    return previewTemplate(AuthorPreview, { fallbackTitle: fallbackTitle });
   }
 
   function pageTemplate(fallbackTitle) {
-    return createClass({
-      render: function () {
-        return h(PagePreview, Object.assign({}, this.props, { fallbackTitle: fallbackTitle }));
-      }
-    });
+    return previewTemplate(PagePreview, { fallbackTitle: fallbackTitle });
   }
 
   window.CMS.registerPreviewStyle("/hugo-brewm.min.css");
