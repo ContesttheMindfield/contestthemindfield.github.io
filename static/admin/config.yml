@@ -1,20 +1,24 @@
+$schema: https://unpkg.com/@sveltia/cms/schema/sveltia-cms.json
+
 backend:
   name: github
   repo: ContesttheMindfield/contestthemindfield.github.io
   branch: main
   squash_merges: true
+  base_url: https://api.netlify.com
   site_domain: contestthemindfield.netlify.app
-  site_url: https://contestthemindfield.github.io/
-  preview_context: deploy-preview
+  auth_methods: [oauth]
 
 publish_mode: editorial_workflow
-local_backend: true
 
 site_url: https://contestthemindfield.github.io/
 display_url: https://contestthemindfield.github.io/
 
 media_folder: static/uploads
 public_folder: /uploads
+
+output:
+  omit_empty_optional_fields: true
 
 slug:
   encoding: ascii

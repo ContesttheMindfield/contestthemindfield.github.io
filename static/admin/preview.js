@@ -26,7 +26,16 @@
       return "";
     }
     var asset = getAsset(value);
-    return asset ? asset.toString() : "";
+    if (!asset) {
+      return "";
+    }
+    if (typeof asset === "string") {
+      return asset;
+    }
+    if (asset.url) {
+      return asset.url;
+    }
+    return typeof asset.toString === "function" ? asset.toString() : "";
   }
 
   function formatDate(value, locale) {
@@ -56,7 +65,7 @@
 
     return h(
       "main",
-      { id: "page", className: "post decap-preview" },
+      { id: "page", className: "post sveltia-preview" },
       series.length
         ? h(
             "div",
@@ -134,7 +143,7 @@
 
     return h(
       "main",
-      { id: "page", className: "decap-preview" },
+      { id: "page", className: "sveltia-preview" },
       h(
         "article",
         { id: "main-article", className: "pagewidth sf", role: "document", "aria-labelledby": "title" },
@@ -165,7 +174,7 @@
 
     return h(
       "main",
-      { id: "page", className: "decap-preview" },
+      { id: "page", className: "sveltia-preview" },
       h(
         "article",
         { id: "main-article", className: "pagewidth sf", role: "document", "aria-labelledby": "title" },

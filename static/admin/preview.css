@@ -9,25 +9,25 @@ body {
   padding: 0;
 }
 
-.decap-preview {
+.sveltia-preview {
   min-height: 100vh;
   padding-block: 2rem;
 }
 
-.decap-preview #main-article {
+.sveltia-preview #main-article {
   margin-inline: auto;
 }
 
-.decap-preview #doc-author .author {
+.sveltia-preview #doc-author .author {
   color: inherit;
 }
 
-.decap-preview #keywords span + span {
+.sveltia-preview #keywords span + span {
   margin-inline-start: 0;
 }
 
 @media (max-width: 640px) {
-  .decap-preview {
+  .sveltia-preview {
     padding-block: 1rem;
   }
 }
