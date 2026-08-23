@@ -7,6 +7,7 @@ type: post
 subtitle: A new journey
 authors:
   - Contest the Mindfield
+  - Arakni Huntsman
 toc: true
 cover: ros_art_008.jpeg
 alt: Aurora, Shooting Star hero card art.
