@@ -1,8 +1,4 @@
 {{- $page := .page -}}
-{{- $languageCode := upper (index (split $page.Language.Lang "-") 0) -}}
-<li>
-    <a href="{{ $page.Site.Home.RelPermalink }}">{{ $languageCode }}</a>
-</li>
 {{- if $page.IsTranslated }}
     <li id="is-translated">
         {{ partial "l10n.html" (dict "page" $page) }}

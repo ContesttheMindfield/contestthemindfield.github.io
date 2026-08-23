@@ -21,6 +21,13 @@
     return typeof value.toArray === "function" ? value.toArray() : value;
   }
 
+  function itemField(item, name) {
+    if (!item) {
+      return undefined;
+    }
+    return typeof item.get === "function" ? item.get(name) : item[name];
+  }
+
   function assetUrl(getAsset, value) {
     if (!value) {
       return "";
@@ -38,19 +45,90 @@
     return typeof asset.toString === "function" ? asset.toString() : "";
   }
 
-  function formatDate(value, locale) {
+  function toDate(value) {
     if (!value) {
-      return "";
+      return null;
     }
     var date = new Date(value);
-    if (Number.isNaN(date.getTime())) {
-      return value;
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+
+  function formatDate(value, locale, includeTime) {
+    var date = toDate(value);
+    if (!date) {
+      return value || "";
     }
-    return new Intl.DateTimeFormat(locale, {
+
+    var options = {
       year: "numeric",
       month: "long",
       day: "numeric"
+    };
+
+    if (includeTime) {
+      options.hour = "numeric";
+      options.minute = "2-digit";
+    }
+
+    return new Intl.DateTimeFormat(locale, {
+      year: options.year,
+      month: options.month,
+      day: options.day,
+      hour: options.hour,
+      minute: options.minute
     }).format(date);
+  }
+
+  function latestHistoryDate(entry) {
+    return values(entry, "history").reduce(function (latest, item) {
+      var candidate = toDate(itemField(item, "date"));
+      return candidate && (!latest || candidate > latest) ? candidate : latest;
+    }, null);
+  }
+
+  function isSameDay(first, second) {
+    return (
+      first.getFullYear() === second.getFullYear() &&
+      first.getMonth() === second.getMonth() &&
+      first.getDate() === second.getDate()
+    );
+  }
+
+  function TimestampPreview(props) {
+    var publishedValue = field(props.entry, "date", "");
+    var published = toDate(publishedValue);
+    var modified = latestHistoryDate(props.entry);
+    var hasModification = published && modified && modified > published;
+    var includeTime = hasModification && isSameDay(published, modified);
+    var publishedLabel = props.locale === "pt-BR" ? "Publicado em" : "Published on";
+    var modifiedLabel = props.locale === "pt-BR" ? "modificado em" : "modified on";
+
+    if (!hasModification) {
+      return h(
+        "time",
+        { dateTime: publishedValue },
+        formatDate(publishedValue, props.locale, false)
+      );
+    }
+
+    return h(
+      "div",
+      { id: "timestamp" },
+      h("span", null, publishedLabel + " "),
+      h(
+        "time",
+        { dateTime: published.toISOString() },
+        formatDate(published, props.locale, includeTime)
+      ),
+      ", ",
+      h("span", null, modifiedLabel + " "),
+      h(
+        "time",
+        { dateTime: modified.toISOString() },
+        formatDate(modified, props.locale, includeTime)
+      ),
+      "."
+    );
   }
 
   function applyPreviewTheme(previewDocument) {
@@ -94,9 +172,9 @@
     var authors = values(entry, "authors");
     var tags = values(entry, "tags");
     var series = values(entry, "series");
-    var cover = assetUrl(props.getAsset, field(entry, "cover", ""));
     var audio = assetUrl(props.getAsset, field(entry, "audio", ""));
     var title = field(entry, "title", locale === "pt-BR" ? "Artigo sem título" : "Untitled article");
+    var subtitle = field(entry, "subtitle", "");
 
     return h(
       "main",
@@ -114,14 +192,14 @@
         h(
           "header",
           { "aria-labelledby": "title" },
-          h("h1", { id: "title" }, title),
-          cover
+          subtitle
             ? h(
-                "figure",
-                { id: "doc-cover" },
-                h("img", { src: cover, alt: field(entry, "alt", "") })
+                "hgroup",
+                null,
+                h("h1", { id: "title" }, title),
+                h("p", { className: "subtitle", role: "doc-subtitle" }, subtitle)
               )
-            : null,
+            : h("h1", { id: "title" }, title),
           authors.length
             ? h(
                 "div",
@@ -135,11 +213,7 @@
                 })
               )
             : null,
-          h(
-            "time",
-            { dateTime: field(entry, "date", "") },
-            formatDate(field(entry, "date", ""), locale)
-          )
+          h(TimestampPreview, { entry: entry, locale: locale })
         ),
         audio
           ? h(
@@ -175,30 +249,36 @@
     var entry = props.entry;
     var cover = assetUrl(props.getAsset, field(entry, "cover", ""));
     var title = field(entry, "title", props.fallbackTitle);
+    var postsBy = props.locale === "pt-BR" ? "Artigos de" : "Articles by";
 
     return h(
       "main",
-      { id: "page", className: "sveltia-preview" },
-      h(
-        "article",
-        { id: "main-article", className: "pagewidth sf", role: "document", "aria-labelledby": "title" },
-        h(
-          "header",
-          { "aria-labelledby": "title" },
-          h("h1", { id: "title" }, title),
-          cover
-            ? h(
-                "figure",
-                { id: "doc-cover" },
+      { id: "term", className: "sveltia-preview" },
+      cover
+        ? h(
+            "div",
+            { id: "top" },
+            h(
+              "section",
+              { className: "hero", "aria-label": title },
+              h(
+                "picture",
+                { className: "hero__image auto" },
                 h("img", { src: cover, alt: field(entry, "alt", "") })
-              )
-            : null
-        ),
+              ),
+              h("div", { className: "hero__content" }, props.widgetFor("body"))
+            )
+          )
+        : null,
+      h(
+        "section",
+        { id: "list-posts", className: "pagewidth", "aria-labelledby": "list-post-heading" },
         h(
-          "section",
-          { id: "content", className: "content", "aria-labelledby": "title" },
-          props.widgetFor("body")
-        )
+          "h1",
+          { id: "author", className: "section-title" },
+          h("strong", { id: "list-post-heading" }, postsBy + ": " + title)
+        ),
+        cover ? null : h("div", { className: "content" }, props.widgetFor("body"))
       )
     );
   }
@@ -251,8 +331,8 @@
     return previewTemplate(ArticlePreview, { locale: locale });
   }
 
-  function authorTemplate(fallbackTitle) {
-    return previewTemplate(AuthorPreview, { fallbackTitle: fallbackTitle });
+  function authorTemplate(fallbackTitle, locale) {
+    return previewTemplate(AuthorPreview, { fallbackTitle: fallbackTitle, locale: locale });
   }
 
   function pageTemplate(fallbackTitle) {
@@ -263,8 +343,8 @@
   window.CMS.registerPreviewStyle("/admin/preview.css");
   window.CMS.registerPreviewTemplate("en_articles", articleTemplate("en-US"));
   window.CMS.registerPreviewTemplate("pt_br_articles", articleTemplate("pt-BR"));
-  window.CMS.registerPreviewTemplate("en_authors", authorTemplate("Untitled author"));
-  window.CMS.registerPreviewTemplate("pt_br_authors", authorTemplate("Autor sem título"));
+  window.CMS.registerPreviewTemplate("en_authors", authorTemplate("Untitled author", "en-US"));
+  window.CMS.registerPreviewTemplate("pt_br_authors", authorTemplate("Autor sem título", "pt-BR"));
   window.CMS.registerPreviewTemplate("en_pages", pageTemplate("Untitled page"));
   window.CMS.registerPreviewTemplate("pt_br_pages", pageTemplate("Página sem título"));
 })();
