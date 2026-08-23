@@ -17,12 +17,12 @@
     {{- $sameDay := eq ($published.Format $dateOnly) ($modified.Format $dateOnly) -}}
     {{- $clockFormat := cond (eq .Language.Lang "en") "3:04 PM" "15:04" -}}
     <div id="timestamp">
-        <span>{{ i18n "published" }} {{ i18n "on" | lower }}</span>
+        <span>{{ i18n "publishedOn" }}</span>
         <time datetime="{{ $published.Format $dateMachine }}">
             {{- $published | time.Format ":date_long" -}}
             {{- if $sameDay }} {{ i18n "atTime" }} {{ $published | time.Format $clockFormat }}{{ end -}}
         </time>,
-        <span>{{ i18n "modified" | lower }} {{ i18n "on" | lower }}</span>
+        <span>{{ i18n "modifiedOn" }}</span>
         <time datetime="{{ $modified.Format $dateMachine }}">
             {{- $modified | time.Format ":date_long" -}}
             {{- if $sameDay }} {{ i18n "atTime" }} {{ $modified | time.Format $clockFormat }}{{ end -}}

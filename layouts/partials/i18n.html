@@ -1,0 +1,59 @@
+{{ "<!-- i18n.html -->" | safeHTML }}
+{{- $label := or $.Language.Label $.Language.LanguageName -}}
+{{- if hugo.IsMultilingual -}}
+    {{- $bilingual := eq (where $.Site.Home.AllTranslations ".Language.disabled" "ne" true | len) 2 -}}
+    {{- if $bilingual -}}
+        {{- range where $.Site.Home.AllTranslations "Lang" "ne" $.Lang -}}
+            {{- $activeLocale := or $.Language.Locale $.Language.Lang -}}
+            {{- $alternateLocale := or .Language.Locale .Language.Lang -}}
+            {{- $activeCode := substr $activeLocale 0 2 | upper -}}
+            {{- $alternateCode := substr $alternateLocale 0 2 | upper -}}
+            {{- $name := or .Language.Label .Language.LanguageName -}}
+            {{- $flag := partial "i18n/flag.html" (dict "iso3166" (substr $alternateLocale -2)) -}}
+            <nav id="bi18n" aria-label="{{ i18n "selectLang" }}">
+                <a
+                    id="has-i18n"
+                    class="on-deck"
+                    href="{{ .Permalink }}"
+                    aria-label="{{ printf "%s %s" (i18n "switchLangTo") $name }}"
+                    aria-description="{{ printf "%s %s" (i18n "currentLang") $label }}">
+                    <span class="emoji">{{ $flag }}&nbsp;</span>
+                    <span class="act iso639 sri" aria-hidden="true">{{ $activeCode }}</span>
+                    <span class="alt iso639 sri" aria-hidden="true">&rarr; {{ $alternateCode }}</span>
+                    <span class="t srt languangeName">{{ $name }}</span>
+                </a>
+            </nav>
+        {{- end -}}
+    {{- else -}}
+        <details id="has-i18n" class="presentation js-details srm" name="on-deck">
+            {{- with $.Language -}}
+                {{- $locale := or .Locale .Lang -}}
+                {{- $flag := partial "i18n/flag.html" (dict "iso3166" (substr $locale -2)) -}}
+                <summary
+                    class="anchor on-deck"
+                    aria-label="{{ i18n "selectLang" }}"
+                    aria-description="{{ printf "%s %s" (i18n "currentLang") $label }}">
+                    <span class="emoji">{{ $flag }}&nbsp;</span>
+                    <span class="iso639">{{ substr $locale 0 2 | upper }} </span>
+                    <span class="languangeName">{{ or .Label .LanguageName }}</span>
+                </summary>
+            {{- end -}}
+            <nav id="i18n-menu" aria-label="{{ i18n "selectLang" }}">
+                <ul class="on-plank">
+                    {{- range where $.Site.Home.AllTranslations "Lang" "ne" $.Lang -}}
+                        {{- $alternateLabel := or .Language.Label .Language.LanguageName -}}
+                        {{- $alternateLocale := or .Language.Locale .Language.Lang -}}
+                        {{- $flag := partial "i18n/flag.html" (dict "iso3166" (substr $alternateLocale -2)) -}}
+                        <li>
+                            <a href="{{ .Permalink }}" aria-label="{{ printf "%s %s" (i18n "switchLangTo") $alternateLabel }}">
+                                <span class="emoji">{{ $flag }}&nbsp;</span>
+                                <span class="languangeName">{{ $alternateLabel }}</span>
+                            </a>
+                        </li>
+                    {{- end -}}
+                </ul>
+                <div class="screening js-cgpn" role="presentation" aria-hidden="true"></div>
+            </nav>
+        </details>
+    {{- end -}}
+{{- end -}}

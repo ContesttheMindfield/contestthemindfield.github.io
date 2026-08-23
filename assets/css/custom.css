@@ -1,3 +1,103 @@
+:root {
+  /* Theme selection color; the local stylesheet shadows the theme default. */
+  --hl: yellow;
+  --chrome-gap: 0.5rem;
+  --chrome-void: max(
+    calc(var(--vfoot) / 2),
+    calc(var(--void) - (var(--marginparwidth) / 2))
+  );
+  --control-target: 44px;
+}
+
+/* Keep shared chrome on one responsive grid when the article TOC expands. */
+body > header.pagewidth,
+main > header.pagewidth,
+body > footer.pagewidth {
+  padding-right: var(--chrome-void);
+  padding-left: var(--chrome-void);
+}
+
+body > header.pagewidth,
+main > header.pagewidth,
+body > footer.pagewidth {
+  display: flex;
+  align-items: center;
+  gap: var(--chrome-gap);
+}
+
+main > header.pagewidth > #has-back {
+  flex: 0 0 2.25em;
+  order: 1;
+}
+
+main > header.pagewidth > #has-breadcrumb {
+  flex: 1 1 auto;
+  order: 2;
+  min-width: 0;
+}
+
+main > header.pagewidth > menu {
+  float: none;
+  flex: 0 0 auto;
+  order: 3;
+  margin-left: auto;
+}
+
+main > header.pagewidth > hr {
+  order: 4;
+}
+
+/* Keep Focus Mode beside Accessibility in the sticky footer. */
+body > footer.pagewidth > #has-a11y {
+  order: 1;
+  margin-right: 0;
+}
+
+body > footer.pagewidth > #focusMode {
+  display: flex;
+  position: static;
+  align-items: center;
+  justify-content: center;
+  order: 2;
+  margin-right: auto;
+  padding: 0;
+}
+
+body > footer.pagewidth > #useBionRead {
+  order: 3;
+}
+
+body > footer.pagewidth > nav {
+  order: 4;
+}
+
+body > footer #has-a11y-summary,
+body > footer #focusModeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--control-target);
+  min-height: var(--control-target);
+}
+
+body > footer #focusModeButton {
+  padding: 0.6ex 1ex;
+}
+
+body > footer #focusModeButton:hover .t,
+body > footer #focusModeButton:focus .t {
+  position: absolute;
+  margin-left: 0;
+}
+
+@media (min-width: 641px) {
+  #main-menu .l1 > li > a {
+    width: auto;
+    white-space: nowrap;
+    hyphens: none;
+  }
+}
+
 #logo {
   container-type: inline-size;
   flex: 1 1 34rem;

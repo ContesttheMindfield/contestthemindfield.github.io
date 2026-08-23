@@ -8,6 +8,12 @@
 [atTime]
   other = 'at'
 
+[publishedOn]
+  other = 'Published on'
+
+[modifiedOn]
+  other = 'modified on'
+
 [posts]
   one = 'Article'
   other = 'Articles'

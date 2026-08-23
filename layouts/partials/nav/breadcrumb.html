@@ -1,9 +1,7 @@
 {{- $page := .page -}}
-{{- if $page.IsTranslated }}
-    <li id="is-translated">
-        {{ partial "l10n.html" (dict "page" $page) }}
-    </li>
-{{- end }}
+<li id="is-translated">
+    {{ partial "l10n.html" (dict "page" $page) }}
+</li>
 {{- range $page.Ancestors.Reverse }}
     {{- if not .IsHome }}
         <li>

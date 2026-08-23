@@ -1,0 +1,44 @@
+{{- $page := .page -}}
+{{- $languageName := or $page.Language.Label $page.Language.LanguageName -}}
+{{- $locale := or $page.Language.Locale $page.Lang -}}
+{{- $languageCode := upper (index (split $locale "-") 0) -}}
+{{- $translations := $page.Translations -}}
+<details id="has-l10n" class="presentation">
+    <summary
+        aria-label="{{ i18n "selectLang" }}"
+        aria-description="{{ printf "%s %s" (i18n "currentLang") $languageName }}">
+        <span>{{ $languageCode }}</span>
+    </summary>
+    <nav aria-label="{{ i18n "selectLang" }}">
+        <ul class="on-plank presentation">
+            {{- if $translations -}}
+                {{- range $translations -}}
+                    {{- $label := or .Language.Label .Language.LanguageName -}}
+                    {{- $translationLocale := or .Language.Locale .Lang -}}
+                    {{- $flag := partial "i18n/flag.html" (dict "iso3166" (substr $translationLocale -2)) -}}
+                    <li>
+                        <a
+                            href="{{ .RelPermalink }}"
+                            aria-label="{{ printf "%s %s" (i18n "switchLangTo") $label }}"
+                            aria-description="{{ .LinkTitle }}">
+                            <span class="emoji">{{ $flag }}&nbsp;</span>
+                            <span>{{ .LinkTitle }}</span>
+                        </a>
+                    </li>
+                {{- end -}}
+            {{- else -}}
+                {{- $flag := partial "i18n/flag.html" (dict "iso3166" (substr $locale -2)) -}}
+                <li>
+                    <a
+                        href="{{ $page.RelPermalink }}"
+                        aria-current="page"
+                        aria-label="{{ $languageName }}"
+                        aria-description="{{ $page.LinkTitle }}">
+                        <span class="emoji">{{ $flag }}&nbsp;</span>
+                        <span>{{ $page.LinkTitle }}</span>
+                    </a>
+                </li>
+            {{- end -}}
+        </ul>
+    </nav>
+</details>

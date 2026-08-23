@@ -8,6 +8,18 @@
 [atTime]
   other = 'às'
 
+[published]
+  other = 'Publicado'
+
+[modified]
+  other = 'Modificado'
+
+[publishedOn]
+  other = 'Publicado em'
+
+[modifiedOn]
+  other = 'modificado em'
+
 [posts]
   one = 'Artigo'
   other = 'Artigos'
