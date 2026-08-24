@@ -107,6 +107,72 @@ main#page.page #content > p {
   width: 100%;
 }
 
+/* Make post authors prominent while keeping multi-author portraits compact. */
+#doc-author {
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  width: fit-content;
+  min-height: 3rem;
+}
+
+#doc-author .author-portraits {
+  position: relative;
+  flex: 0 0 auto;
+  width: var(--portrait-stack-width);
+  height: 3rem;
+  transition: width 240ms ease;
+}
+
+#doc-author .author-portrait {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  box-sizing: border-box;
+  border: 2px solid var(--bg);
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  object-fit: cover;
+  transform: translateX(var(--portrait-stack-offset));
+  transition: transform 240ms ease;
+}
+
+#doc-author .author-names {
+  align-self: center;
+  line-height: 1.272;
+}
+
+#doc-author .author-name {
+  color: var(--fg);
+  font-style: normal;
+  font-weight: 700;
+}
+
+#doc-author.has-multiple-portraits:is(:hover, :focus-within) .author-portraits {
+  width: var(--portrait-expanded-width);
+}
+
+#doc-author.has-multiple-portraits:is(:hover, :focus-within) .author-portrait {
+  transform: translateX(var(--portrait-expanded-offset));
+}
+
+@media (hover: none), (pointer: coarse) {
+  #doc-author.has-multiple-portraits .author-portraits {
+    width: var(--portrait-expanded-width);
+  }
+
+  #doc-author.has-multiple-portraits .author-portrait {
+    transform: translateX(var(--portrait-expanded-offset));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #doc-author .author-portraits,
+  #doc-author .author-portrait {
+    transition: none;
+  }
+}
+
 #logo {
   container-type: inline-size;
   flex: 1 1 34rem;

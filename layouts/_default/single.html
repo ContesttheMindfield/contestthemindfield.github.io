@@ -64,24 +64,49 @@
             {{- if $isPost }}
                 {{- $authors := .GetTerms "authors" }}
                 {{- with $authors }}
-                    <div id="doc-author" class="textsw">
-                        {{- if eq (len .) 1 }}
+                    {{- $portraits := slice }}
+                    {{- range . }}
+                        {{- $displayPicture := partial "page/cover.html" (dict "page" .) }}
+                        {{- with $displayPicture }}
+                            {{- $portraits = $portraits | append (dict "src" .) }}
+                        {{- end }}
+                    {{- end }}
+                    {{- $portraitCount := len $portraits }}
+                    {{- $lastPortraitIndex := math.Max 0 (sub $portraitCount 1) }}
+                    {{- $stackWidth := add 3 (mul $lastPortraitIndex 1.125) }}
+                    {{- $expandedWidth := add (mul $portraitCount 3) (mul $lastPortraitIndex 0.25) }}
+                    <div id="doc-author" class="textsw{{ if gt $portraitCount 1 }} has-multiple-portraits{{ end }}">
+                        {{- with $portraits }}
+                            <div
+                                class="author-portraits"
+                                aria-hidden="true"
+                                style="--portrait-stack-width: {{ $stackWidth }}rem; --portrait-expanded-width: {{ $expandedWidth }}rem;"
+                            >
+                                {{- range $index, $portrait := . }}
+                                    <img
+                                        class="author-portrait sri"
+                                        src="{{ $portrait.src }}"
+                                        alt=""
+                                        width="48"
+                                        height="48"
+                                        decoding="async"
+                                        style="--portrait-stack-offset: {{ mul $index 1.125 }}rem; --portrait-expanded-offset: {{ mul $index 3.25 }}rem;"
+                                    >
+                                {{- end }}
+                            </div>
+                        {{- end }}
+                        <ul class="author-names delimiter presentation" aria-label="{{ i18n "authors" (len .) }}">
                             {{- range . }}
                                 {{- $flair := .Params.flair }}
-                                {{- $displayPicture := partial "page/cover.html" (dict "page" .) }}
-                                {{- $portraitAlt := or .Params.alt .LinkTitle }}
-                                <a class="author" href="{{ .Permalink }}" aria-label="{{ .LinkTitle }}">
-                                    {{- with $displayPicture }}
-                                        <img id="avatar" class="sri" src="{{ . }}" alt="{{ $portraitAlt }}">
-                                    {{- end }}
-                                    <span
-                                        {{- with $flair }} class="has-desc" aria-description="{{ . }}"{{ end -}}
-                                    >{{ .LinkTitle }}</span>
-                                </a>
+                                <li>
+                                    <a
+                                        class="author-name{{ with $flair }} has-desc{{ end }}"
+                                        href="{{ .Permalink }}"
+                                        {{- with $flair }} aria-description="{{ . }}"{{ end -}}
+                                    >{{ .LinkTitle }}</a>
+                                </li>
                             {{- end }}
-                        {{- else }}
-                            {{ partial "terms.html" (dict "taxonomy" "authors" "class" "delimiter" "page" $) }}
-                        {{- end }}
+                        </ul>
                     </div>
                 {{- end }}
                 {{ partial "page/timestamp.html" . }}

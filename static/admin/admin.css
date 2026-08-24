@@ -1,0 +1,6 @@
+/* Let editors enlarge post body fields beyond Sveltia's automatic content height. */
+[data-field-type="markdown"][data-key-path="body"]
+  :is(.lexical-root, textarea.auto-resize) {
+  overflow: auto !important;
+  resize: vertical !important;
+}
