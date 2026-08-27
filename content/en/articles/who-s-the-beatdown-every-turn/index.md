@@ -6,6 +6,8 @@ draft: false
 type: post
 authors:
   - StridersUser
+series:
+  - The Anatomy of a Flesh and Blood Card
 toc: true
 cover: pasted-image-1787803774036.png
 math: false
@@ -13,9 +15,9 @@ mathJax: false
 hljs: false
 ---
 
-![](pasted-image-1787803774036.png)
-
 `Flesh and Blood's pitch and resource system proposes something unique: it simulates two people at their physical and tactical prime, fighting each other until one of them runs out of energy or blood.`
+
+![](101_Scar_for_a_Scar_Arif_Wijaya-scaled%20%281%29.jpg "Scar For a Scar")
 
 `Most decks in Flesh and Blood sit somewhere on a spectrum we'd loosely call midrange, though the word barely means anything once you actually apply it to this game. That's because of a single design choice sitting underneath everything else: almost every card in your hand is simultaneously your resource base, your offense, and your defense. There's no split between "the stuff that lets you play spells" and "the spells themselves" the way there is in Magic and most other card games. Each card is all of it at once, and it only becomes one of those things the moment you actually commit it, which means every card sitting in your hand is being evaluated for three completely different jobs, constantly, until you're forced to pick.`
 
@@ -25,11 +27,13 @@ hljs: false
 
 `Flesh and Blood asks the same question, but it doesn't let you answer it once. Because your hand is pitch, attack, and defense at the same time, the answer can flip mid-turn cycle, and it's being recalculated constantly rather than settled at the start of the game. Am I aggressive this turn, or defensive? Is it worth taking my skull cracked open now so I can have a stronger swing later? If I block with my power cards, I've protected my life total, but I might not have them when I actually need to close the game. But if I don't block, I'm conceding an absurd amount of value.`
 
+![](flesh-and-blood-beginners-guide-ultimate-guard.webp)
+
 `None of those answers stay true for long. The powerful reds in your hand might suddenly be worth pitching for resources instead of playing or blocking, even though that's technically an inefficient use of a card that strong, because what you actually need this turn is fuel, not face value. Other times it runs the opposite way: a card that would be perfectly fine to play right now gets held back on purpose, saved for a turn down the line where the exact same card stops being merely good and becomes devastating.`
 
 `You are, essentially, re-drafting your hand's job description every single turn, in real time, against someone doing the exact same thing to you: attacking, defending, or setting up to do either next.`
 
-`Unless you're playing Cindra. If you're playing Cindra, please do take offense.`
+~~`Unless you're playing Cindra. If you're playing Cindra, please do take offense.`~~
 
 `Answering "who's the beatdown" well, turn after turn, isn't just a read on the life totals. It's a read on the cards themselves, and the best way of converting what your hero's intellect has granted you for the turn cycle, and ultimately into the whole game itself. You can't correctly decide whether to swing, block, or hold back if you don't already know what each card in your hand is actually worth in the first place.`
 
