@@ -29,7 +29,7 @@ hljs: false
 
 `You are, essentially, re-drafting your hand's job description every single turn, in real time, against someone doing the exact same thing to you: attacking, defending, or setting up to do either next.`
 
-`Unless you're playing Cindra. If you're playing Cindra, please do take offense.`
+~~`Unless you're playing Cindra. If you're playing Cindra, please do take offense.`~~
 
 `Answering "who's the beatdown" well, turn after turn, isn't just a read on the life totals. It's a read on the cards themselves, and the best way of converting what your hero's intellect has granted you for the turn cycle, and ultimately into the whole game itself. You can't correctly decide whether to swing, block, or hold back if you don't already know what each card in your hand is actually worth in the first place.`
 
