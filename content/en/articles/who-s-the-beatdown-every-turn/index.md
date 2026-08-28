@@ -16,7 +16,6 @@ series:
 toc: false
 cover: yugin-maffioli-flesh-and-blood-2022-legend-story-studios.jpg
 alt: Barraging Beatdown card art
-audio: Jovem Dionisio - ACORDA PEDRINHO - Jovem Dionisio (youtube).mp3
 math: false
 mathJax: false
 hljs: false
