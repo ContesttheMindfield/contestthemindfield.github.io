@@ -105,7 +105,8 @@
                                 {{- end }}
                             </div>
                         {{- end }}
-                        <ul class="author-names delimiter presentation" aria-label="{{ i18n "authors" (len .) }}">
+                        {{- $authorListClass := cond (eq (len .) 1) "inline" "delimiter" }}
+                        <ul class="author-names {{ $authorListClass }} presentation" aria-label="{{ i18n "authors" (len .) }}">
                             {{- range . }}
                                 {{- $flair := .Params.flair }}
                                 <li>

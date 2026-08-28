@@ -71,7 +71,7 @@ body[data-scheme="dark"] {
   top: var(--fab-card-top);
   left: var(--fab-card-left);
   box-sizing: border-box;
-  border: 1px solid var(--mid);
+  border: 0;
   border-radius: 0.55rem;
   width: min(19rem, calc(100vw - 2rem));
   padding: 0.35rem;
