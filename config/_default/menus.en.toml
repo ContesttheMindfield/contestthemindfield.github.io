@@ -10,6 +10,12 @@
   pageRef = '/categories'
   weight = 2
 
+[[main]]
+  name = 'Series'
+  identifier = 'series'
+  pageRef = '/series'
+  weight = 3
+
 [[more]]
   name = 'About'
   identifier = 'about'
@@ -41,4 +47,3 @@
   url = '/en/index.xml'
   pre = 'rss'
   weight = 2
-

@@ -72,14 +72,14 @@ body[data-scheme="dark"] {
   left: var(--fab-card-left);
   box-sizing: border-box;
   border: 0;
-  border-radius: 0.55rem;
+  border-radius: 0;
   width: min(19rem, calc(100vw - 2rem));
-  padding: 0.35rem;
-  overflow: hidden;
+  padding: 0;
+  overflow: visible;
   transform: translate(-50%, -50%);
   transition: opacity 120ms ease, visibility 120ms ease;
   box-shadow: 0 0.8rem 2.5rem rgb(0 0 0 / 35%);
-  background: var(--bg);
+  background: transparent;
   color: var(--fg);
   text-decoration: none;
   visibility: hidden;
@@ -98,8 +98,8 @@ body[data-scheme="dark"] {
   aspect-ratio: 450 / 628;
   max-height: calc(100vh - 2.7rem);
   overflow: hidden;
-  border-radius: 0.35rem;
-  background: color-mix(in srgb, var(--mid) 12%, var(--bg));
+  border-radius: 0;
+  background: transparent;
 }
 
 .sveltia-preview .fab-card-preview__image {

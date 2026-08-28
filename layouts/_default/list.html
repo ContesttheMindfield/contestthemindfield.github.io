@@ -80,16 +80,29 @@
         {{- /*
 
             main aside */}}
-        {{- if and site.Taxonomies.tags $firstPage (ne .Kind "term") }}
+        {{- if and (or .IsHome site.Taxonomies.tags) $firstPage (ne .Kind "term") }}
             {{- if .IsHome }}
-                <aside id="list-tags" aria-labelledby="discover">
-                    <h1 class="section-title">
-                        <strong id="discover">{{ i18n "discover" }}</strong>
-                    </h1>
-                    <nav aria-labelledby="discover">
-                        {{ partial "taxonomies.html" (dict "taxonomy" "tags" "class" "rounded has-hash" "limit" 16) }}
-                    </nav>
-                    <a class="tr" href="{{ "/tags/" | relLangURL }}">{{ i18n "seeMore" }}</a>
+                <aside id="list-tags" aria-label="{{ i18n "discover" }}">
+                    {{- with site.Taxonomies.series }}
+                        <section class="home-taxonomy-group">
+                            <h1 class="section-title">
+                                <strong id="home-series-heading">{{ i18n "series" }}</strong>
+                            </h1>
+                            <nav aria-labelledby="home-series-heading">
+                                {{ partial "taxonomies.html" (dict "taxonomy" "series" "class" "rounded" "limit" 16) }}
+                            </nav>
+                            <a class="tr" href="{{ "/series/" | relLangURL }}">{{ i18n "seeMore" }}</a>
+                        </section>
+                    {{- end }}
+                    <section class="home-taxonomy-group">
+                        <h1 class="section-title">
+                            <strong id="home-tags-heading">{{ i18n "tags" }}</strong>
+                        </h1>
+                        <nav aria-labelledby="home-tags-heading">
+                            {{ partial "taxonomies.html" (dict "taxonomy" "tags" "class" "rounded has-hash" "limit" 16) }}
+                        </nav>
+                        <a class="tr" href="{{ "/tags/" | relLangURL }}">{{ i18n "seeMore" }}</a>
+                    </section>
                     {{- if and .Params.NetworkGraphAside (not .Params.NetworkGraph) }}
                         <div id="network-graph"
                             data-title="{{ i18n "networkGraph"}}"

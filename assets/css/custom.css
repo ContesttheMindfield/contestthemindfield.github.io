@@ -107,6 +107,42 @@ main#page.page #content > p {
   width: 100%;
 }
 
+/* Center the post reading column while preserving the theme's prose measure. */
+#main-article.rm #content > p,
+#main-article.rm #content > blockquote,
+#main-article.rm #content > ul,
+#main-article.rm #content > ol {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+#main-article.rm #content > h2,
+#main-article.rm #content > h3,
+#main-article.rm #content > h4,
+#main-article.rm #content > h5,
+#main-article.rm #content > h6 {
+  margin-right: auto;
+  margin-left: auto;
+  width: var(--golden-ratio);
+}
+
+#main-article.rm #content > figure:not(.fullwidth) > img {
+  display: block;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+#main-article.rm #content > p > img:not(.fab-inline-icon) {
+  display: block;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+/* Stack the homepage taxonomy groups using the theme's existing tag styling. */
+#home #list-tags .home-taxonomy-group + .home-taxonomy-group {
+  margin-top: var(--medskip);
+}
+
 /* Make post authors prominent while keeping multi-author portraits compact. */
 #doc-author {
   flex-wrap: wrap;
@@ -234,14 +270,14 @@ main#page.page #content > p {
   left: var(--fab-card-left);
   box-sizing: border-box;
   border: 0;
-  border-radius: 0.55rem;
+  border-radius: 0;
   width: min(19rem, calc(100vw - 2rem));
-  padding: 0.35rem;
-  overflow: hidden;
+  padding: 0;
+  overflow: visible;
   transform: translate(-50%, -50%);
   transition: opacity 120ms ease, visibility 120ms ease;
   box-shadow: 0 0.8rem 2.5rem rgb(0 0 0 / 35%);
-  background: var(--bg);
+  background: transparent;
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
@@ -258,8 +294,8 @@ main#page.page #content > p {
   aspect-ratio: 450 / 628;
   max-height: calc(100vh - 2.7rem);
   overflow: hidden;
-  border-radius: 0.35rem;
-  background: color-mix(in srgb, var(--mid) 12%, var(--bg));
+  border-radius: 0;
+  background: transparent;
 }
 
 .fab-card-preview__image {
