@@ -8,7 +8,7 @@ authors:
   - StridersUser
 series:
   - The Anatomy of a Flesh and Blood Card
-toc: true
+toc: false
 cover: pasted-image-1787803774036.png
 alt: Barraging Beatdown card art
 math: false
@@ -36,6 +36,10 @@ None of those answers stay true for long. The powerful reds in your hand might s
 You are, essentially, re-drafting your hand's job description every single turn, in real time, against someone doing the exact same thing to you: attacking, defending, or setting up to do either next.
 
 ~~Unless you're playing Cindra. If you're playing Cindra, please do take offense.~~
+
+[Aurora, Shooting Star](#fab-card:aurora-shooting-star)
+
+~~Gain 1 [Power](#fab-icon:power), 1 [Life](#fab-icon:life), and 1 [Resource](#fab-icon:resource).~~
 
 ~~Despite doing so instinctively all along, a few months ago I got into a situation that forced me to address the question of who is the beatdown consciously for the first time in a Flesh and Blood game. I somehow found myself in the finals match of a Road to Nationals Event. I was playing Verdance, my all-time favorite hero, against the other finalist, playing Dash I/O. The standard plan against Dash is to fatigue her out: her aggression is balanced around the risk of fatiguing herself first, which usually shoehorses her as the beatdown and Verdance the control deck by matchup theory alone.~~
 
