@@ -70,6 +70,8 @@ test("Hugo renders cards, a printing override, every icon, and attribution", asy
     [
       "[Aurora, Shooting Star](#fab-card:aurora-shooting-star)",
       "[Aurora AST001](#fab-card:aurora-shooting-star@AST001)",
+      "[Cindra extended art](#fab-card:cindra-dracai-of-retribution@HNT054~N-C-EA)",
+      "[Cindra full art](#fab-card:cindra-dracai-of-retribution@HNT054~N-C-FA)",
       "[Power](#fab-icon:power) [Defense](#fab-icon:defense) [Armor](#fab-icon:armor)",
       "[Life](#fab-icon:life) [Intellect](#fab-icon:intellect) [Resource](#fab-icon:resource)",
       "[Chi](#fab-icon:chi) [Tap](#fab-icon:tap) [Untap](#fab-icon:untap)",
@@ -80,6 +82,8 @@ test("Hugo renders cards, a printing override, every icon, and attribution", asy
       const html = await readFile(htmlPath, "utf8");
       assert.match(html, /data-fab-card-trigger/);
       assert.match(html, /AST001\.webp/);
+      assert.match(html, /HNT054-MV\.webp/);
+      assert.match(html, /HNT054-MV_BACK\.webp/);
       assert.match(html, /class="fab-inline-icon"/);
       for (const filename of [
         "icon_p.png",
@@ -143,6 +147,11 @@ for (const scenario of [
     name: "unknown printings",
     body: "[Aurora](#fab-card:aurora-shooting-star@BAD001)",
     error: /Unknown printing/,
+  },
+  {
+    name: "unknown treatments",
+    body: "[Cindra](#fab-card:cindra-dracai-of-retribution@HNT054~N-C-ALT)",
+    error: /Unknown treatment "N-C-ALT" for printing "HNT054"/,
   },
   {
     name: "unknown icons",

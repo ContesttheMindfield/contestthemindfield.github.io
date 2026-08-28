@@ -107,13 +107,24 @@ main#page.page #content > p {
   width: 100%;
 }
 
-/* Center the post reading column while preserving the theme's prose measure. */
+/* Center posts and give desktop prose a more comfortable reading measure. */
+#main-article.rm {
+  --article-measure: 100%;
+}
+
+@media screen and (min-width: 641px) {
+  #main-article.rm {
+    --article-measure: min(44rem, 78%);
+  }
+}
+
 #main-article.rm #content > p,
 #main-article.rm #content > blockquote,
 #main-article.rm #content > ul,
 #main-article.rm #content > ol {
   margin-right: auto;
   margin-left: auto;
+  width: var(--article-measure);
 }
 
 #main-article.rm #content > h2,
@@ -123,7 +134,7 @@ main#page.page #content > p {
 #main-article.rm #content > h6 {
   margin-right: auto;
   margin-left: auto;
-  width: var(--golden-ratio);
+  width: var(--article-measure);
 }
 
 #main-article.rm #content > figure:not(.fullwidth) > img {

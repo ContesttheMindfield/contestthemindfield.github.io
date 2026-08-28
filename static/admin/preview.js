@@ -67,9 +67,16 @@
     var iconPrefix = "#fab-icon:";
 
     if (value.indexOf(cardPrefix) === 0) {
-      var cardParts = value.slice(cardPrefix.length).split("@");
-      return cardParts.length <= 2 && cardParts[0]
-        ? { type: "card", slug: cardParts[0], printing: cardParts[1] || "" }
+      var cardMatch = value.slice(cardPrefix.length).match(
+        /^([a-z0-9-]+)(?:@([A-Z0-9-]+)(?:~([A-Z0-9-]+))?)?$/
+      );
+      return cardMatch
+        ? {
+            type: "card",
+            slug: cardMatch[1],
+            printing: cardMatch[2] || "",
+            treatment: cardMatch[3] || ""
+          }
         : null;
     }
     if (value.indexOf(iconPrefix) === 0) {
@@ -146,17 +153,22 @@
   function enhanceFabCard(anchor, reference, catalog, locale, ordinal) {
     var card = catalog && catalog.cards ? catalog.cards[reference.slug] : null;
     var printingID = reference.printing || (card && card.defaultPrinting);
+    var treatment =
+      reference.treatment || (!reference.printing && card && card.defaultTreatment) || "";
     var printing = card
       ? card.printings.find(function (candidate) {
-          return candidate.id === printingID;
+          return (
+            candidate.id === printingID &&
+            (!treatment || candidate.treatment === treatment)
+          );
         })
       : null;
 
     if (!card || !printing) {
       anchor.classList.add("fab-reference-error");
       anchor.title = locale === "pt-BR"
-        ? "Referência de carta ou impressão desconhecida"
-        : "Unknown card or printing reference";
+        ? "Referência de carta, impressão ou tratamento desconhecida"
+        : "Unknown card, printing, or treatment reference";
       return;
     }
 

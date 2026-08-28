@@ -9,6 +9,8 @@ import {
   cardSlug,
   compactPrintings,
   slugify,
+  treatmentKey,
+  treatmentLabel,
 } from "../scripts/lib/fab-catalog.mjs";
 
 const projectRoot = resolve(import.meta.dirname, "..");
@@ -21,8 +23,9 @@ const source = {
 function printing(id, image, extra = {}) {
   return {
     id,
+    unique_id: `${id}-${image || "missing"}`,
     image_url: image,
-    edition: "Unlimited",
+    edition: "N",
     foiling: "S",
     art_variations: [],
     ...extra,
@@ -63,19 +66,80 @@ test("catalogs choose the first normal-art printing as the default", () => {
   );
 
   assert.equal(catalog.cards["aurora-shooting-star"].defaultPrinting, "AST001");
+  assert.equal(catalog.cards["aurora-shooting-star"].defaultTreatment, "N-S");
   assert.equal(catalog.cards["aurora-shooting-star"].printings.length, 2);
 });
 
-test("duplicate printing IDs prefer their normal-art image", () => {
+test("printing IDs retain distinct standard, extended-art, and full-art treatments", () => {
   const printings = compactPrintings([
-    printing("AST001", "https://images.example.test/alternate.webp", {
-      art_variations: ["AA"],
+    printing("HNT054", "https://images.example.test/extended.webp", {
+      foiling: "C",
+      art_variations: ["EA"],
     }),
-    printing("AST001", "https://images.example.test/standard.webp"),
+    printing("HNT054", "https://images.example.test/full.webp", {
+      foiling: "C",
+      art_variations: ["FA"],
+    }),
+    printing("HNT054", "https://images.example.test/standard.webp"),
   ]);
 
-  assert.deepEqual(printings.map(({ id, image }) => ({ id, image })), [
-    { id: "AST001", image: "https://images.example.test/standard.webp" },
+  assert.deepEqual(printings.map(({ id, treatment, treatmentLabel, image }) => ({
+    id,
+    treatment,
+    treatmentLabel,
+    image,
+  })), [
+    {
+      id: "HNT054",
+      treatment: "N-S",
+      treatmentLabel: "Standard",
+      image: "https://images.example.test/standard.webp",
+    },
+    {
+      id: "HNT054",
+      treatment: "N-C-EA",
+      treatmentLabel: "Cold Foil · Extended Art",
+      image: "https://images.example.test/extended.webp",
+    },
+    {
+      id: "HNT054",
+      treatment: "N-C-FA",
+      treatmentLabel: "Cold Foil · Full Art",
+      image: "https://images.example.test/full.webp",
+    },
+  ]);
+});
+
+test("treatment keys and labels include edition, foiling, and art variations", () => {
+  const treatment = {
+    edition: "F",
+    foiling: "C",
+    art_variations: ["FA", "AA"],
+  };
+  assert.equal(treatmentKey(treatment), "F-C-AA-FA");
+  assert.equal(treatmentLabel(treatment), "First Edition · Cold Foil · Alternate Art · Full Art");
+});
+
+test("identical treatments use face metadata to distinguish front and back images", () => {
+  const printings = compactPrintings([
+    printing("HNT261", "https://images.example.test/front.webp", {
+      foiling: "C",
+      art_variations: ["FA"],
+      double_sided_card_info: [{ is_front: true }],
+    }),
+    printing("HNT261", "https://images.example.test/back.webp", {
+      foiling: "C",
+      art_variations: ["FA"],
+      double_sided_card_info: [{ is_front: false }],
+    }),
+  ]);
+
+  assert.deepEqual(printings.map(({ treatment, treatmentLabel }) => ({
+    treatment,
+    treatmentLabel,
+  })), [
+    { treatment: "N-C-FA-FRONT", treatmentLabel: "Cold Foil · Full Art · Front Face" },
+    { treatment: "N-C-FA-BACK", treatmentLabel: "Cold Foil · Full Art · Back Face" },
   ]);
 });
 
@@ -127,6 +191,37 @@ test("generated Hugo and Sveltia catalogs stay identical", async () => {
   assert.equal(sveltia, hugo);
 });
 
+test("generated Cindra catalog distinguishes every HNT054 treatment", async () => {
+  const catalog = JSON.parse(
+    await readFile(resolve(projectRoot, "data/fab/cards.json"), "utf8"),
+  );
+  const cindra = catalog.cards["cindra-dracai-of-retribution"];
+  assert.equal(cindra.defaultPrinting, "HNT054");
+  assert.equal(cindra.defaultTreatment, "N-S");
+  assert.deepEqual(
+    cindra.printings
+      .filter(({ id }) => id === "HNT054")
+      .map(({ treatment, treatmentLabel, image }) => ({ treatment, treatmentLabel, image })),
+    [
+      {
+        treatment: "N-S",
+        treatmentLabel: "Standard",
+        image: "https://legendstory-production-s3-public.s3.amazonaws.com/media/cards/large/HNT054.webp",
+      },
+      {
+        treatment: "N-C-EA",
+        treatmentLabel: "Cold Foil · Extended Art",
+        image: "https://legendstory-production-s3-public.s3.amazonaws.com/media/cards/large/HNT054-MV.webp",
+      },
+      {
+        treatment: "N-C-FA",
+        treatmentLabel: "Cold Foil · Full Art",
+        image: "https://legendstory-production-s3-public.s3.amazonaws.com/media/cards/large/HNT054-MV_BACK.webp",
+      },
+    ],
+  );
+});
+
 test("README card and icon examples resolve against the generated catalog", async () => {
   const readme = await readFile(resolve(projectRoot, "README.md"), "utf8");
   const catalog = JSON.parse(
@@ -134,16 +229,17 @@ test("README card and icon examples resolve against the generated catalog", asyn
   );
 
   const cardReferences = Array.from(
-    readme.matchAll(/#fab-card:([a-z0-9-]+)(?:@([A-Z0-9-]+))?/g),
+    readme.matchAll(/#fab-card:([a-z0-9-]+)(?:@([A-Z0-9-]+)(?:~([A-Z0-9-]+))?)?/g),
   );
   assert.ok(cardReferences.length >= 3, "README should document card references");
-  for (const [, slug, printingID] of cardReferences) {
+  for (const [, slug, printingID, treatment] of cardReferences) {
     const catalogCard = catalog.cards[slug];
     assert.ok(catalogCard, `README card slug should exist: ${slug}`);
     if (printingID) {
       assert.ok(
-        catalogCard.printings.some(({ id }) => id === printingID),
-        `README printing should exist: ${slug}@${printingID}`,
+        catalogCard.printings.some(({ id, treatment: candidateTreatment }) =>
+          id === printingID && (!treatment || candidateTreatment === treatment)),
+        `README printing treatment should exist: ${slug}@${printingID}${treatment ? `~${treatment}` : ""}`,
       );
     }
   }

@@ -4,7 +4,7 @@
     {{- $page := .PageInner -}}
     {{- $spec := strings.TrimPrefix $cardMarker .Destination -}}
     {{- $parts := split $spec "@" -}}
-    {{- if or (eq $spec "") (gt (len $parts) 2) -}}
+    {{- if or (eq $spec "") (eq (index $parts 0) "") (gt (len $parts) 2) -}}
         {{- errorf "Invalid Flesh and Blood card reference %q in %s" .Destination $page.File.Path -}}
     {{- end -}}
     {{- $slug := index $parts 0 -}}
@@ -14,8 +14,21 @@
         {{- errorf "Unknown Flesh and Blood card slug %q in %s; run npm run fab:sync or correct the reference" $slug $page.File.Path -}}
     {{- end -}}
     {{- $printingID := $card.defaultPrinting -}}
+    {{- $treatmentID := $card.defaultTreatment -}}
     {{- if eq (len $parts) 2 -}}
-        {{- $printingID = index $parts 1 -}}
+        {{- $printingSpec := index $parts 1 -}}
+        {{- $printingParts := split $printingSpec "~" -}}
+        {{- if or (eq $printingSpec "") (eq (index $printingParts 0) "") (gt (len $printingParts) 2) -}}
+            {{- errorf "Invalid Flesh and Blood printing reference %q for card %q in %s" $printingSpec $slug $page.File.Path -}}
+        {{- end -}}
+        {{- $printingID = index $printingParts 0 -}}
+        {{- $treatmentID = "" -}}
+        {{- if eq (len $printingParts) 2 -}}
+            {{- $treatmentID = index $printingParts 1 -}}
+            {{- if eq $treatmentID "" -}}
+                {{- errorf "Invalid Flesh and Blood treatment reference %q for printing %q of card %q in %s" $treatmentID $printingID $slug $page.File.Path -}}
+            {{- end -}}
+        {{- end -}}
     {{- end -}}
     {{- if not $printingID -}}
         {{- errorf "Flesh and Blood card %q has no usable image in %s" $slug $page.File.Path -}}
@@ -23,6 +36,12 @@
     {{- $matches := where $card.printings "id" $printingID -}}
     {{- if eq (len $matches) 0 -}}
         {{- errorf "Unknown printing %q for Flesh and Blood card %q in %s" $printingID $slug $page.File.Path -}}
+    {{- end -}}
+    {{- if $treatmentID -}}
+        {{- $matches = where $matches "treatment" $treatmentID -}}
+        {{- if eq (len $matches) 0 -}}
+            {{- errorf "Unknown treatment %q for printing %q of Flesh and Blood card %q in %s" $treatmentID $printingID $slug $page.File.Path -}}
+        {{- end -}}
     {{- end -}}
     {{- $printing := index $matches 0 -}}
     {{- $ordinal := add (default 0 ($page.Store.Get "fabCardOrdinal")) 1 -}}

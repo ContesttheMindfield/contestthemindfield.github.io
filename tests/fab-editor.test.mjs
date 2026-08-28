@@ -23,16 +23,59 @@ const catalog = {
       name: "Aurora, Shooting Star",
       color: "",
       defaultPrinting: "AST001",
+      defaultTreatment: "N-S",
       printings: [
-        { id: "LGS999", image: "https://example.test/LGS999.webp" },
-        { id: "AST001", image: "https://example.test/AST001.webp" },
+        {
+          id: "LGS999",
+          treatment: "N-R-AA",
+          treatmentLabel: "Rainbow Foil · Alternate Art",
+          image: "https://example.test/LGS999.webp",
+        },
+        {
+          id: "AST001",
+          treatment: "N-S",
+          treatmentLabel: "Standard",
+          image: "https://example.test/AST001.webp",
+        },
+      ],
+    },
+    "cindra-dracai-of-retribution": {
+      name: "Cindra, Dracai of Retribution",
+      color: "",
+      defaultPrinting: "HNT054",
+      defaultTreatment: "N-S",
+      printings: [
+        {
+          id: "HNT054",
+          treatment: "N-S",
+          treatmentLabel: "Standard",
+          image: "https://example.test/HNT054.webp",
+        },
+        {
+          id: "HNT054",
+          treatment: "N-C-EA",
+          treatmentLabel: "Cold Foil · Extended Art",
+          image: "https://example.test/HNT054-MV.webp",
+        },
+        {
+          id: "HNT054",
+          treatment: "N-C-FA",
+          treatmentLabel: "Cold Foil · Full Art",
+          image: "https://example.test/HNT054-MV_BACK.webp",
+        },
       ],
     },
     "pummel-red": {
       name: "Pummel",
       color: "Red",
       defaultPrinting: "WTR206",
-      printings: [{ id: "WTR206", image: "https://example.test/WTR206.webp" }],
+      defaultTreatment: "U-S",
+      printings: [{
+        id: "WTR206",
+        treatment: "U-S",
+        treatmentLabel: "Unlimited · Standard",
+        image: "https://example.test/WTR206.webp",
+      }],
     },
   },
 };
@@ -42,15 +85,16 @@ test("card-picker options are unique, searchable labels with defaults first", ()
   assert.equal(new Set(options.map(({ value }) => value)).size, options.length);
   assert.deepEqual(options.slice(0, 2), [
     {
-      label: "Aurora, Shooting Star — No color — AST001 (default)",
-      value: "aurora-shooting-star@AST001",
+      label: "Aurora, Shooting Star — No color — AST001 — Standard (default)",
+      value: "aurora-shooting-star@AST001~N-S",
     },
     {
-      label: "Aurora, Shooting Star — No color — LGS999",
-      value: "aurora-shooting-star@LGS999",
+      label: "Aurora, Shooting Star — No color — LGS999 — Rainbow Foil · Alternate Art",
+      value: "aurora-shooting-star@LGS999~N-R-AA",
     },
   ]);
-  assert.ok(options.some(({ label }) => /Pummel — Red — WTR206/.test(label)));
+  assert.ok(options.some(({ label }) => /Pummel — Red — WTR206 — Unlimited · Standard/.test(label)));
+  assert.ok(options.some(({ label }) => /HNT054 — Cold Foil · Extended Art/.test(label)));
 });
 
 test("card search stays empty until queried and caps lazy results", () => {
@@ -58,30 +102,34 @@ test("card search stays empty until queried and caps lazy results", () => {
   assert.deepEqual(FabEditor.searchCardOptions(catalog, "a", 30), []);
   assert.deepEqual(
     FabEditor.searchCardOptions(catalog, "aurora", 30).map(({ value }) => value),
-    ["aurora-shooting-star@AST001", "aurora-shooting-star@LGS999"],
+    ["aurora-shooting-star@AST001~N-S", "aurora-shooting-star@LGS999~N-R-AA"],
   );
-  assert.equal(FabEditor.searchCardOptions(catalog, "red", 1)[0].value, "pummel-red@WTR206");
-  assert.equal(FabEditor.searchCardOptions(catalog, "lgs999", 30)[0].value, "aurora-shooting-star@LGS999");
+  assert.equal(FabEditor.searchCardOptions(catalog, "red", 1)[0].value, "pummel-red@WTR206~U-S");
+  assert.equal(FabEditor.searchCardOptions(catalog, "lgs999", 30)[0].value, "aurora-shooting-star@LGS999~N-R-AA");
+  assert.deepEqual(
+    FabEditor.searchCardOptions(catalog, "cindra extended", 30).map(({ value }) => value),
+    ["cindra-dracai-of-retribution@HNT054~N-C-EA"],
+  );
 });
 
 test("card references serialize defaults, alternates, custom text, and escaping", () => {
   assert.equal(
-    FabEditor.cardToBlock({ card: "aurora-shooting-star@AST001", text: "" }, catalog),
+    FabEditor.cardToBlock({ card: "aurora-shooting-star@AST001~N-S", text: "" }, catalog),
     "[Aurora, Shooting Star](#fab-card:aurora-shooting-star)",
   );
   assert.equal(
-    FabEditor.cardToBlock({ card: "aurora-shooting-star@LGS999", text: "Aurora art" }, catalog),
+    FabEditor.cardToBlock({ card: "aurora-shooting-star@LGS999~N-R-AA", text: "Aurora art" }, catalog),
     "[Aurora art](#fab-card:aurora-shooting-star@LGS999)",
   );
 
   const escaped = FabEditor.cardToBlock(
-    { card: "aurora-shooting-star@AST001", text: "Use [Aurora] \\ now" },
+    { card: "aurora-shooting-star@AST001~N-S", text: "Use [Aurora] \\ now" },
     catalog,
   );
   assert.equal(escaped, "[Use \\[Aurora\\] \\\\ now](#fab-card:aurora-shooting-star)");
   const parsed = FabEditor.CARD_PATTERN.exec(escaped);
   assert.deepEqual(FabEditor.cardFromBlock(parsed, catalog), {
-    card: "aurora-shooting-star@AST001",
+    card: "aurora-shooting-star@AST001~N-S",
     text: "Use [Aurora] \\ now",
   });
 });
@@ -91,7 +139,7 @@ test("existing card references reopen with their printing and custom text", () =
     "[Aurora, Shooting Star](#fab-card:aurora-shooting-star)",
   );
   assert.deepEqual(FabEditor.cardFromBlock(defaultMatch, catalog), {
-    card: "aurora-shooting-star@AST001",
+    card: "aurora-shooting-star@AST001~N-S",
     text: "",
   });
 
@@ -99,8 +147,48 @@ test("existing card references reopen with their printing and custom text", () =
     "[A translated name](#fab-card:aurora-shooting-star@LGS999)",
   );
   assert.deepEqual(FabEditor.cardFromBlock(alternateMatch, catalog), {
-    card: "aurora-shooting-star@LGS999",
+    card: "aurora-shooting-star@LGS999~N-R-AA",
     text: "A translated name",
+  });
+});
+
+test("same-code treatments serialize and reopen without ambiguity", () => {
+  assert.equal(
+    FabEditor.cardToBlock({
+      card: "cindra-dracai-of-retribution@HNT054~N-S",
+      text: "",
+    }, catalog),
+    "[Cindra, Dracai of Retribution](#fab-card:cindra-dracai-of-retribution)",
+  );
+  assert.equal(
+    FabEditor.cardToBlock({
+      card: "cindra-dracai-of-retribution@HNT054~N-C-EA",
+      text: "Cindra extended art",
+    }, catalog),
+    "[Cindra extended art](#fab-card:cindra-dracai-of-retribution@HNT054~N-C-EA)",
+  );
+  assert.equal(
+    FabEditor.cardToBlock({
+      card: "cindra-dracai-of-retribution@HNT054~N-C-FA",
+      text: "Cindra full art",
+    }, catalog),
+    "[Cindra full art](#fab-card:cindra-dracai-of-retribution@HNT054~N-C-FA)",
+  );
+
+  var legacy = FabEditor.CARD_PATTERN.exec(
+    "[Cindra](#fab-card:cindra-dracai-of-retribution@HNT054)",
+  );
+  assert.deepEqual(FabEditor.cardFromBlock(legacy, catalog), {
+    card: "cindra-dracai-of-retribution@HNT054~N-S",
+    text: "Cindra",
+  });
+
+  var fullArt = FabEditor.CARD_PATTERN.exec(
+    "[Cindra](#fab-card:cindra-dracai-of-retribution@HNT054~N-C-FA)",
+  );
+  assert.deepEqual(FabEditor.cardFromBlock(fullArt, catalog), {
+    card: "cindra-dracai-of-retribution@HNT054~N-C-FA",
+    text: "Cindra",
   });
 });
 

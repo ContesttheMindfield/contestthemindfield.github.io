@@ -11,7 +11,7 @@
 })(typeof window !== "undefined" ? window : null, function (root) {
   "use strict";
 
-  var CARD_PATTERN = /\[((?:\\.|[^\]\\\n])*)\]\(#fab-card:([a-z0-9-]+)(?:@([A-Z0-9-]+))?\)/;
+  var CARD_PATTERN = /\[((?:\\.|[^\]\\\n])*)\]\(#fab-card:([a-z0-9-]+)(?:@([A-Z0-9-]+)(?:~([A-Z0-9-]+))?)?\)/;
   var ICON_PATTERN = /\[((?:\\.|[^\]\\\n])*)\]\(#fab-icon:([a-z][a-z-]*)\)/;
 
   function escapeMarkdownLabel(value) {
@@ -30,29 +30,61 @@
     if (separator <= 0 || separator === selection.length - 1) {
       return null;
     }
+    var printingSpec = selection.slice(separator + 1).split("~");
+    if (!printingSpec[0] || printingSpec.length > 2) {
+      return null;
+    }
     return {
       slug: selection.slice(0, separator),
-      printing: selection.slice(separator + 1)
+      printing: printingSpec[0],
+      treatment: printingSpec[1] || ""
     };
+  }
+
+  function resolveCardPrinting(card, printingID, treatment) {
+    if (!card || !Array.isArray(card.printings)) {
+      return null;
+    }
+    var candidates = card.printings.filter(function (candidate) {
+      return candidate.id === printingID;
+    });
+    if (!treatment) {
+      return candidates[0] || null;
+    }
+    return candidates.find(function (candidate) {
+      return candidate.treatment === treatment;
+    }) || null;
+  }
+
+  function printingSelection(slug, printing) {
+    return slug + "@" + printing.id + "~" + printing.treatment;
   }
 
   function orderedPrintings(card) {
     var printings = Array.isArray(card.printings) ? card.printings.slice() : [];
     return printings.sort(function (left, right) {
-      if (left.id === card.defaultPrinting) {
-        return right.id === card.defaultPrinting ? 0 : -1;
+      var leftDefault =
+        left.id === card.defaultPrinting && left.treatment === card.defaultTreatment;
+      var rightDefault =
+        right.id === card.defaultPrinting && right.treatment === card.defaultTreatment;
+      if (leftDefault) {
+        return rightDefault ? 0 : -1;
       }
-      return right.id === card.defaultPrinting ? 1 : 0;
+      return rightDefault ? 1 : 0;
     });
   }
 
   function cardOption(slug, card, printing) {
     var color = card.color || "No color";
-    var label = card.name + " — " + color + " — " + printing.id;
-    if (printing.id === card.defaultPrinting) {
+    var treatment = printing.treatmentLabel || printing.treatment;
+    var label = card.name + " — " + color + " — " + printing.id + " — " + treatment;
+    if (
+      printing.id === card.defaultPrinting &&
+      printing.treatment === card.defaultTreatment
+    ) {
       label += " (default)";
     }
-    return { label: label, value: slug + "@" + printing.id };
+    return { label: label, value: printingSelection(slug, printing) };
   }
 
   function buildCardOptions(catalog) {
@@ -73,7 +105,7 @@
     var values = new Set();
     entries.forEach(function (entry) {
       orderedPrintings(entry.card).forEach(function (printing) {
-        var value = entry.slug + "@" + printing.id;
+        var value = printingSelection(entry.slug, printing);
         if (values.has(value)) {
           throw new Error("Duplicate FAB card-picker option: " + value);
         }
@@ -112,7 +144,9 @@
 
       orderedPrintings(card).forEach(function (printing, printingIndex) {
         var printingId = normalizeSearch(printing.id);
-        var haystack = cardText + " " + printingId;
+        var treatment = normalizeSearch(printing.treatment);
+        var treatmentLabel = normalizeSearch(printing.treatmentLabel);
+        var haystack = cardText + " " + printingId + " " + treatment + " " + treatmentLabel;
         if (!terms.every(function (term) { return haystack.indexOf(term) !== -1; })) {
           return;
         }
@@ -155,10 +189,8 @@
   function selectedCardOption(catalog, value) {
     var selection = parseCardSelection(value);
     var card = selection && catalog.cards ? catalog.cards[selection.slug] : null;
-    var printing = card && Array.isArray(card.printings)
-      ? card.printings.find(function (candidate) {
-          return candidate.id === selection.printing;
-        })
+    var printing = selection
+      ? resolveCardPrinting(card, selection.printing, selection.treatment)
       : null;
     return card && printing ? cardOption(selection.slug, card, printing) : null;
   }
@@ -187,10 +219,12 @@
   function cardFromBlock(match, catalog) {
     var slug = match[2];
     var card = catalog.cards && catalog.cards[slug];
-    var printing = match[3] || (card && card.defaultPrinting) || "";
+    var printingID = match[3] || (card && card.defaultPrinting) || "";
+    var treatment = match[4] || (!match[3] && card && card.defaultTreatment) || "";
+    var printing = resolveCardPrinting(card, printingID, treatment);
     var label = unescapeMarkdownLabel(match[1]);
     return {
-      card: printing ? slug + "@" + printing : slug,
+      card: printing ? printingSelection(slug, printing) : slug,
       text: card && label === card.name ? "" : label
     };
   }
@@ -198,10 +232,8 @@
   function cardToBlock(data, catalog) {
     var selection = parseCardSelection(data && data.card);
     var card = selection && catalog.cards ? catalog.cards[selection.slug] : null;
-    var printing = card && Array.isArray(card.printings)
-      ? card.printings.find(function (candidate) {
-          return candidate.id === selection.printing;
-        })
+    var printing = selection
+      ? resolveCardPrinting(card, selection.printing, selection.treatment)
       : null;
     if (!card || !printing) {
       return "";
@@ -211,7 +243,15 @@
       ? String(data.text)
       : "";
     var label = sourceText.trim() ? sourceText : card.name;
-    var suffix = selection.printing === card.defaultPrinting ? "" : "@" + selection.printing;
+    var isDefault =
+      printing.id === card.defaultPrinting && printing.treatment === card.defaultTreatment;
+    var preferredForPrinting = resolveCardPrinting(card, printing.id, "");
+    var suffix = isDefault
+      ? ""
+      : "@" + printing.id +
+        (preferredForPrinting && preferredForPrinting.treatment === printing.treatment
+          ? ""
+          : "~" + printing.treatment);
     return (
       "[" + escapeMarkdownLabel(label) + "](#fab-card:" + selection.slug + suffix + ")"
     );
@@ -334,7 +374,7 @@
             className: inputClass,
             type: "search",
             value: this.state.query,
-            placeholder: "Search by name, color, or printing ID",
+            placeholder: "Search by name, ID, foil, or treatment",
             autoComplete: "off",
             role: "combobox",
             "aria-autocomplete": "list",
@@ -383,7 +423,7 @@
       fields: [
         {
           name: "card",
-          label: "Card and printing",
+          label: "Card, printing, and treatment",
           widget: "fab-card-search"
         },
         {
@@ -502,6 +542,7 @@
     parseCardSelection: parseCardSelection,
     registerFabEditorComponents: registerFabEditorComponents,
     resolveIcon: resolveIcon,
+    resolveCardPrinting: resolveCardPrinting,
     searchCardOptions: searchCardOptions,
     selectedCardOption: selectedCardOption,
     unescapeMarkdownLabel: unescapeMarkdownLabel

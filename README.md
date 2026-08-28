@@ -57,7 +57,7 @@ The media archetype includes guidance for optional covers and alt text, audio, m
 
 Sveltia's article editor has two Flesh and Blood buttons in the rich-text toolbar:
 
-- **FAB Card** opens a lazy **Card and printing** search. Place the cursor where the reference belongs, type at least two characters of the card's English name, pitch color, or printing ID, choose one of the matching results, optionally change **Display text**, and confirm the dialog. The editor never renders the complete catalog at once; it shows at most 30 matches after you type. Results appear as `Card Name — Color — PRINTING_ID`; the catalog's preferred printing is listed first and marked `(default)`.
+- **FAB Card** opens a lazy **Card, printing, and treatment** search. Place the cursor where the reference belongs, type at least two characters of the card's English name, pitch color, printing ID, foiling, or art treatment, choose one of the matching results, optionally change **Display text**, and confirm the dialog. The editor never renders the complete catalog at once; it shows at most 30 matches after you type. Results appear as `Card Name — Color — PRINTING_ID — Treatment`; the catalog's preferred printing and treatment is listed first and marked `(default)`. Separate extended-art, full-art, alternate-art, and foil versions remain separate choices even when they share a printed card code.
 - **FAB Icon** opens a compact list of all supported game symbols. Choose a symbol, optionally change **Source text**, and confirm the dialog.
 
 Inserted references appear as compact inline components in the rich-text editor and as working card previews or symbols in Sveltia's article preview. Click an existing component to reopen its dialog and change the card, printing, symbol, or source text. These custom buttons are disabled while the Markdown field is in raw mode; switch back to rich-text mode to use them, or type the documented syntax directly in raw mode.
@@ -74,13 +74,30 @@ The text inside the square brackets is what readers see and may be translated. T
 [Pummel](#fab-card:pummel-red)
 ```
 
-By default, the site uses the catalog's standard printing. Add `@` and a printing ID when an article needs a particular printing or artwork:
+By default, the site uses the catalog's standard printing and treatment. Add `@` and a printing ID when an article needs a particular printing:
 
 ```md
 [Aurora, Shooting Star](#fab-card:aurora-shooting-star@AST001)
 ```
 
-Use the FAB Card search to find available printing IDs. Maintainers can also inspect the card's entry in `data/fab/cards.json`. Specify a printing only when the exact artwork matters; choosing the marked default produces the suffix-free form so the managed catalog can continue to supply the preferred printing.
+Some products use the same printed ID for several treatments. Add `~` and the treatment key after the printing ID to select the exact version. For example, all three of these Cindra cards are `HNT054`, but they have different images:
+
+```md
+[Cindra, Dracai of Retribution](#fab-card:cindra-dracai-of-retribution@HNT054)
+[Cindra extended art](#fab-card:cindra-dracai-of-retribution@HNT054~N-C-EA)
+[Cindra full art](#fab-card:cindra-dracai-of-retribution@HNT054~N-C-FA)
+```
+
+The treatment key combines edition, foiling, and any art variation. Common components are:
+
+| Component | Meaning |
+| --- | --- |
+| `A`, `F`, `U`, `N` | Alpha, first edition, unlimited, or no edition |
+| `S`, `R`, `C`, `G` | Standard, rainbow foil, cold foil, or gold cold foil |
+| `AB`, `AA`, `AT` | Alternate border, alternate art, or alternate text |
+| `EA`, `FA`, `HS` | Extended art, full art, or half size |
+
+Use the FAB Card search to find available versions by friendly treatment name; typing `Cindra extended`, `HNT054 cold foil`, or `full art` will narrow the results without loading the full catalog into the dialog. Maintainers can also inspect the card's entry in `data/fab/cards.json`. A plain `@PRINTING_ID` remains backward-compatible and selects that ID's preferred treatment, while the picker writes `@PRINTING_ID~TREATMENT` only when the chosen version needs the extra distinction. Choosing the catalog default produces the suffix-free form.
 
 The FAB Icon button writes the same link notation for inline game symbols. These are all supported keys:
 
@@ -106,7 +123,7 @@ The link text remains readable in Markdown and supplies the component's source m
 
 On a desktop, a card image opens on pointer hover or keyboard focus. Clicking keeps it open. On a touch device, tap the card name to toggle it. Escape, moving focus away, tapping outside, or opening another card closes the image. If the remote image cannot load, readers keep the card name and see a short unavailable-image message.
 
-Sveltia CMS accepts these as normal links in either editor mode. Its article preview recognizes the same markers and displays the icons and card images. An unknown reference is underlined as an error in the preview; the Hugo build then stops with the exact invalid card, printing, or icon and lists the supported icon keys. Correct the slug or printing with the FAB Card search, correct the icon key with the table above, or run the catalog update if the upstream data has deliberately changed.
+Sveltia CMS accepts these as normal links in either editor mode. Its article preview recognizes the same markers and displays the icons and exact card treatment. An unknown reference is underlined as an error in the preview; the Hugo build then stops with the exact invalid card, printing, treatment, or icon and lists the supported icon keys. Correct the slug, printing, or treatment with the FAB Card search, correct the icon key with the table above, or run the catalog update if the upstream data has deliberately changed.
 
 ### Update the card catalog
 
@@ -120,7 +137,7 @@ npm run build:search
 
 `fab:sync` is the only step that requires network access. Normal development and deployment builds use the committed catalog and do not silently fetch new card data. Review the generated changes before committing them.
 
-Card metadata comes from [The Fab Cube's open-source dataset](https://github.com/the-fab-cube/flesh-and-blood-cards). The supported symbol list follows the [Flesh and Blood Comprehensive Rules, §1.12.4](https://rules.fabtcg.com/pdf/en-fab-cr.pdf), and `fab:sync` downloads the symbol PNGs from the official rules site. Card faces and symbols are official Legend Story Studios assets. Pages containing card art display the required Legend Story Studios copyright notice; use of these assets remains subject to the [LSS asset-use terms](https://fabtcg.com/resources/terms-use-licensed-assets/).
+Card metadata comes from [The Fab Cube's open-source dataset](https://github.com/the-fab-cube/flesh-and-blood-cards); its [abbreviation reference](https://github.com/the-fab-cube/flesh-and-blood-cards/blob/develop/documentation/abbreviations.md) defines the edition, foiling, and art-variation codes used in treatment keys. The supported symbol list follows the [Flesh and Blood Comprehensive Rules, §1.12.4](https://rules.fabtcg.com/pdf/en-fab-cr.pdf), and `fab:sync` downloads the symbol PNGs from the official rules site. Card faces and symbols are official Legend Story Studios assets. Pages containing card art display the required Legend Story Studios copyright notice; use of these assets remains subject to the [LSS asset-use terms](https://fabtcg.com/resources/terms-use-licensed-assets/).
 
 ## Media guidelines
 
