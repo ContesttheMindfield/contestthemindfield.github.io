@@ -53,6 +53,54 @@ Every article must keep `type = "post"` and must list at least one author profil
 
 The media archetype includes guidance for optional covers and alt text, audio, math, syntax highlighting, and redaction history. Advanced Brewm shortcodes and external libraries should be enabled only by content that needs them.
 
+## Flesh and Blood references
+
+Article Markdown can display a card image when a reader hovers over, focuses, or taps an explicitly marked card name. Use an ordinary Markdown link whose destination starts with `#fab-card:`:
+
+```md
+[Aurora, Shooting Star](#fab-card:aurora-shooting-star)
+```
+
+The text inside the square brackets is what readers see and may be translated. The lookup key after `#fab-card:` always comes from the official English card name: make it lowercase, remove accents and apostrophes, and replace punctuation or spaces with hyphens. Cards with a pitch color add `-red`, `-yellow`, or `-blue`, for example:
+
+```md
+[Pummel](#fab-card:pummel-red)
+```
+
+By default, the site uses the catalog's standard printing. Add `@` and a printing ID when an article needs a particular printing or artwork:
+
+```md
+[Aurora, Shooting Star](#fab-card:aurora-shooting-star@AST001)
+```
+
+Find available printing IDs under the card's entry in `data/fab/cards.json`. Specify one only when the exact printing matters; leaving it out lets the managed catalog provide the default.
+
+Use the same link notation to replace words with inline game-property symbols:
+
+```md
+Gain 1 [Power](#fab-icon:power), 1 [Life](#fab-icon:life), and 1 [Resource](#fab-icon:resource).
+```
+
+The link text supplies meaning while editing, and the published page replaces it with an accessible icon. The supported names are `power`, `life`, and `resource`.
+
+On a desktop, a card image opens on pointer hover or keyboard focus. Clicking keeps it open. On a touch device, tap the card name to toggle it. Escape, moving focus away, tapping outside, or opening another card closes the image. If the remote image cannot load, readers keep the card name and see a short unavailable-image message.
+
+Sveltia CMS accepts these as normal links in the Markdown field. Its article preview recognizes the same markers and displays the icons and card images. An unknown reference is underlined as an error in the editor; the Hugo build then stops with the exact invalid card, printing, or icon so it can be corrected before publication.
+
+### Update the card catalog
+
+The source revision is pinned in `scripts/fab-source.json`. To adopt a reviewed upstream revision, change that pin and regenerate the committed Hugo catalog, Sveltia preview catalog, and local icons:
+
+```sh
+npm run fab:sync
+npm run test:fab
+npm run build:search
+```
+
+`fab:sync` is the only step that requires network access. Normal development and deployment builds use the committed catalog and do not silently fetch new card data. Review the generated changes before committing them.
+
+Card metadata comes from [The Fab Cube's open-source dataset](https://github.com/the-fab-cube/flesh-and-blood-cards). Card faces and symbols are official Legend Story Studios assets. Pages containing card art display the required Legend Story Studios copyright notice; use of these assets remains subject to the [LSS asset-use terms](https://fabtcg.com/resources/terms-use-licensed-assets/).
+
 ## Media guidelines
 
 Store article media beside `index.md` in the article page bundle and author portraits beside the profile's `_index.md`. Sveltia CMS does this automatically. Use lowercase ASCII filenames with hyphens, such as `aurora-shooting-star.webp`, and avoid spaces or version suffixes such as `final-2`.

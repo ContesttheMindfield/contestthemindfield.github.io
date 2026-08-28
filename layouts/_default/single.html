@@ -19,6 +19,16 @@
     {{- if .Params.Hljs }}
         {{ partialCached "head/js/hljs.html" . }}
     {{- end }}
+    {{- with resources.Get "js/fab-references.js" }}
+        {{- if eq hugo.Environment "development" }}
+            <script src="{{ .RelPermalink }}" defer></script>
+        {{- else }}
+            {{- with . | minify | fingerprint "sha256" }}
+                <script src="{{ .RelPermalink }}"
+                    integrity="{{ .Data.Integrity }}" crossorigin="anonymous" defer></script>
+            {{- end }}
+        {{- end }}
+    {{- end }}
 {{- end }}
 
 {{- define "main" }}
@@ -122,6 +132,11 @@
                 {{ replace .Content "disabled=" "" | safeHTML }}
             {{- else }}
                 {{ .Content }}
+            {{- end }}
+            {{- if .Page.Store.Get "hasFabCard" }}
+                <p class="fab-copyright" data-pagefind-ignore>
+                    {{- i18n "fab_copyright" -}}
+                </p>
             {{- end }}
         </section>
         {{- if $isPost }}

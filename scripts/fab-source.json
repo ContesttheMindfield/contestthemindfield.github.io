@@ -1,0 +1,19 @@
+{
+  "repository": "https://github.com/the-fab-cube/flesh-and-blood-cards",
+  "ref": "e56071b41b6e784b652eeada1ff86e6d8538f554",
+  "cardsPath": "json/english/card.json",
+  "icons": {
+    "power": {
+      "source": "https://rules.fabtcg.com/en/assets/images/icon_p.png",
+      "filename": "icon_p.png"
+    },
+    "life": {
+      "source": "https://rules.fabtcg.com/en/assets/images/icon_h.png",
+      "filename": "icon_h.png"
+    },
+    "resource": {
+      "source": "https://rules.fabtcg.com/en/assets/images/icon_r.png",
+      "filename": "icon_r.png"
+    }
+  }
+}

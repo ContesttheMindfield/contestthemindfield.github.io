@@ -45,6 +45,116 @@ body[data-scheme="dark"] {
   margin-inline-start: 0;
 }
 
+.sveltia-preview .fab-card-reference {
+  position: static;
+  border-radius: 0.15em;
+  color: var(--ac);
+  text-decoration: underline dotted;
+  text-underline-offset: 0.14em;
+  cursor: zoom-in;
+}
+
+.sveltia-preview .fab-card-reference:focus-visible {
+  outline: 2px solid var(--ac);
+  outline-offset: 0.15em;
+}
+
+.sveltia-preview .fab-card-reference.is-open {
+  cursor: zoom-out;
+}
+
+.sveltia-preview .fab-card-preview {
+  --fab-card-left: 50%;
+  --fab-card-top: 50%;
+  position: fixed;
+  z-index: 1000;
+  top: var(--fab-card-top);
+  left: var(--fab-card-left);
+  box-sizing: border-box;
+  border: 1px solid var(--mid);
+  border-radius: 0.55rem;
+  width: min(19rem, calc(100vw - 2rem));
+  padding: 0.35rem;
+  overflow: hidden;
+  transform: translate(-50%, -50%);
+  transition: opacity 120ms ease, visibility 120ms ease;
+  box-shadow: 0 0.8rem 2.5rem rgb(0 0 0 / 35%);
+  background: var(--bg);
+  color: var(--fg);
+  text-decoration: none;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sveltia-preview .fab-card-reference:is(:hover, :focus, .is-open) .fab-card-preview {
+  visibility: visible;
+  opacity: 1;
+}
+
+.sveltia-preview .fab-card-preview__frame {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 450 / 628;
+  max-height: calc(100vh - 2.7rem);
+  overflow: hidden;
+  border-radius: 0.35rem;
+  background: color-mix(in srgb, var(--mid) 12%, var(--bg));
+}
+
+.sveltia-preview .fab-card-preview__image {
+  display: block;
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform: rotate(var(--fab-card-rotation, 0deg));
+}
+
+.sveltia-preview .fab-card-preview__fallback {
+  grid-area: 1 / 1;
+  max-width: 24ch;
+  padding: 1rem;
+  font: 600 0.9rem/1.4 sans-serif;
+  text-align: center;
+}
+
+.sveltia-preview .fab-inline-icon-preview {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-inline: 0.06em;
+  background-image: var(--fab-icon-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  overflow: hidden;
+  color: transparent;
+  font-size: 1em;
+  text-indent: 200%;
+  white-space: nowrap;
+  vertical-align: -0.12em;
+}
+
+.sveltia-preview .fab-reference-error {
+  text-decoration: underline wavy #c00;
+  text-decoration-thickness: 0.1em;
+}
+
+.sveltia-preview .fab-copyright {
+  margin-block-start: 2rem;
+  color: var(--mid);
+  font-family: sans-serif;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sveltia-preview .fab-card-preview {
+    transition: none;
+  }
+}
+
 @media (max-width: 640px) {
   .sveltia-preview {
     padding-block: 1rem;

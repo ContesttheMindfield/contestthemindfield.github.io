@@ -47,3 +47,24 @@
 
 [redactionNotes]
   other = 'Algumas informações podem mudar com o tempo; mantemos este histórico atualizado.'
+
+[fab_card_show_label]
+  other = 'Mostrar a imagem da carta {{ .Name }}'
+
+[fab_card_image_alt]
+  other = 'Imagem da carta: {{ .Name }}'
+
+[fab_card_image_unavailable]
+  other = 'A imagem da carta {{ .Name }} não está disponível.'
+
+[fab_icon_power]
+  other = 'Poder'
+
+[fab_icon_life]
+  other = 'Vida'
+
+[fab_icon_resource]
+  other = 'Recurso'
+
+[fab_copyright]
+  other = 'Imagens das cartas e símbolos do jogo © Legend Story Studios.'

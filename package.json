@@ -4,7 +4,9 @@
   "scripts": {
     "build": "hugo --minify --gc --cleanDestinationDir",
     "index": "pagefind --site public",
-    "build:search": "npm run build && npm run index"
+    "build:search": "npm run build && npm run index",
+    "fab:sync": "node scripts/sync-fab.mjs",
+    "test:fab": "node --test tests/fab-*.test.mjs"
   },
   "devDependencies": {
     "pagefind": "1.5.2"

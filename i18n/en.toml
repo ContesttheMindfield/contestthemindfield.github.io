@@ -20,3 +20,24 @@
 
 [recent]
   other = 'Recent Articles'
+
+[fab_card_show_label]
+  other = 'Show the card image for {{ .Name }}'
+
+[fab_card_image_alt]
+  other = 'Card image: {{ .Name }}'
+
+[fab_card_image_unavailable]
+  other = 'The card image for {{ .Name }} is unavailable.'
+
+[fab_icon_power]
+  other = 'Power'
+
+[fab_icon_life]
+  other = 'Life'
+
+[fab_icon_resource]
+  other = 'Resource'
+
+[fab_copyright]
+  other = 'Card images and game symbols © Legend Story Studios.'

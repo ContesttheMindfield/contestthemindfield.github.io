@@ -1,0 +1,102 @@
+{{- $cardMarker := "#fab-card:" -}}
+{{- $iconMarker := "#fab-icon:" -}}
+{{- if strings.HasPrefix .Destination $cardMarker -}}
+    {{- $page := .PageInner -}}
+    {{- $spec := strings.TrimPrefix $cardMarker .Destination -}}
+    {{- $parts := split $spec "@" -}}
+    {{- if or (eq $spec "") (gt (len $parts) 2) -}}
+        {{- errorf "Invalid Flesh and Blood card reference %q in %s" .Destination $page.File.Path -}}
+    {{- end -}}
+    {{- $slug := index $parts 0 -}}
+    {{- $catalog := site.Data.fab.cards -}}
+    {{- $card := index $catalog.cards $slug -}}
+    {{- if not $card -}}
+        {{- errorf "Unknown Flesh and Blood card slug %q in %s; run npm run fab:sync or correct the reference" $slug $page.File.Path -}}
+    {{- end -}}
+    {{- $printingID := $card.defaultPrinting -}}
+    {{- if eq (len $parts) 2 -}}
+        {{- $printingID = index $parts 1 -}}
+    {{- end -}}
+    {{- if not $printingID -}}
+        {{- errorf "Flesh and Blood card %q has no usable image in %s" $slug $page.File.Path -}}
+    {{- end -}}
+    {{- $matches := where $card.printings "id" $printingID -}}
+    {{- if eq (len $matches) 0 -}}
+        {{- errorf "Unknown printing %q for Flesh and Blood card %q in %s" $printingID $slug $page.File.Path -}}
+    {{- end -}}
+    {{- $printing := index $matches 0 -}}
+    {{- $ordinal := add (default 0 ($page.Store.Get "fabCardOrdinal")) 1 -}}
+    {{- $previewID := printf "fab-card-preview-%d" $ordinal -}}
+    {{- $noop := $page.Store.Set "fabCardOrdinal" $ordinal -}}
+    {{- $noop = $page.Store.Set "hasFabCard" true -}}
+    {{- $showLabel := i18n "fab_card_show_label" (dict "Name" $card.name) -}}
+    <span class="fab-card-reference" data-fab-card-reference><button
+            type="button"
+            class="fab-card-trigger"
+            aria-label="{{ $showLabel }}"
+            aria-controls="{{ $previewID }}"
+            aria-expanded="false"
+            data-fab-card-trigger
+        >{{- with .Text }}{{ . }}{{ end -}}</button><span
+            id="{{ $previewID }}"
+            class="fab-card-preview"
+            role="tooltip"
+            aria-hidden="true"
+            data-fab-card-preview
+        ><span class="fab-card-preview__frame"><img
+                    class="fab-card-preview__image"
+                    src="{{ $printing.image | safeURL }}"
+                    alt="{{ i18n "fab_card_image_alt" (dict "Name" $card.name) }}"
+                    width="450"
+                    height="628"
+                    loading="lazy"
+                    decoding="async"
+                    style="--fab-card-rotation: {{ default 0 $printing.rotation }}deg;"
+                    data-fab-card-image
+                ><span class="fab-card-preview__fallback" data-fab-card-error hidden>
+                    {{- i18n "fab_card_image_unavailable" (dict "Name" $card.name) -}}
+                </span></span></span></span>
+{{- else if strings.HasPrefix .Destination $iconMarker -}}
+    {{- $page := .PageInner -}}
+    {{- $name := strings.TrimPrefix $iconMarker .Destination -}}
+    {{- $icons := dict
+        "power" (dict "file" "images/fab/icon_p.png" "label" (i18n "fab_icon_power"))
+        "life" (dict "file" "images/fab/icon_h.png" "label" (i18n "fab_icon_life"))
+        "resource" (dict "file" "images/fab/icon_r.png" "label" (i18n "fab_icon_resource"))
+    -}}
+    {{- $icon := index $icons $name -}}
+    {{- if not $icon -}}
+        {{- errorf "Unknown Flesh and Blood icon %q in %s; supported icons are power, life, and resource" $name $page.File.Path -}}
+    {{- end -}}
+    <img
+        class="fab-inline-icon"
+        src="{{ $icon.file | relURL }}"
+        alt="{{ $icon.label }}"
+        title="{{ $icon.label }}"
+        width="20"
+        height="20"
+        decoding="async"
+    >
+{{- else -}}
+    {{- $u := urls.Parse .Destination -}}
+    {{- $href := $u.String -}}
+    {{- if strings.HasPrefix $u.String "#" -}}
+        {{- $href = printf "%s#%s" .PageInner.RelPermalink $u.Fragment -}}
+    {{- else if and $href (not $u.IsAbs) -}}
+        {{- $path := strings.TrimPrefix "./" $u.Path -}}
+        {{- with or ($.PageInner.GetPage $path) ($.PageInner.Resources.Get $path) (resources.Get $path) -}}
+            {{- $href = .RelPermalink -}}
+            {{- with $u.RawQuery -}}
+                {{- $href = printf "%s?%s" $href . -}}
+            {{- end -}}
+            {{- with $u.Fragment -}}
+                {{- $href = printf "%s#%s" $href . -}}
+            {{- end -}}
+        {{- end -}}
+    {{- end -}}
+    <a href="{{ .Destination | safeURL }}"
+        {{- with .Title }} title="{{ . }}"{{ end -}}
+        {{- if $u.IsAbs }} target="_blank" rel="external noopener noreferrer nofollow"{{ end }}>
+        {{- with .Text }}{{ . }}{{ end -}}
+    </a>
+{{- end -}}
