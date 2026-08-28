@@ -1,16 +1,22 @@
 ---
 translationKey: ''
 title: Who's the Beatdown, Every Turn
-date: 2026-08-27T01:10:00.000-03:00
+date: 2026-08-28T00:00:00.000-03:00
 draft: false
 type: post
 authors:
   - StridersUser
+categories:
+  - Strategy
+tags:
+  - Basics
+  - Begginer
 series:
   - The Anatomy of a Flesh and Blood Card
 toc: false
 cover: yugin-maffioli-flesh-and-blood-2022-legend-story-studios.jpg
 alt: Barraging Beatdown card art
+audio: Jovem Dionisio - ACORDA PEDRINHO - Jovem Dionisio (youtube).mp3
 math: false
 mathJax: false
 hljs: false
