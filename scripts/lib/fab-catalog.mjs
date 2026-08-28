@@ -95,6 +95,59 @@ export function compactPrintings(printings = []) {
   });
 }
 
+export function buildIconCatalog(sourceIcons = {}) {
+  if (!sourceIcons || typeof sourceIcons !== "object" || Array.isArray(sourceIcons)) {
+    throw new Error("FAB icons must be an object");
+  }
+
+  const icons = {};
+  const iconAliases = {};
+  const iconOrder = [];
+
+  for (const [key, sourceIcon] of Object.entries(sourceIcons)) {
+    if (!/^[a-z][a-z-]*$/.test(key)) {
+      throw new Error(`Invalid Flesh and Blood icon key: ${key}`);
+    }
+    if (!sourceIcon || typeof sourceIcon !== "object" || Array.isArray(sourceIcon)) {
+      throw new Error(`Flesh and Blood icon ${key} must be an object`);
+    }
+
+    const filename = requiredString(sourceIcon.filename, "filename", `FAB icon ${key}`);
+    const labels = sourceIcon.labels;
+    if (!labels || typeof labels !== "object" || Array.isArray(labels)) {
+      throw new Error(`FAB icon ${key} is missing labels`);
+    }
+
+    const en = requiredString(labels.en, "English label", `FAB icon ${key}`);
+    const ptBR = requiredString(labels["pt-BR"], "Portuguese label", `FAB icon ${key}`);
+    const aliases = Array.isArray(sourceIcon.aliases) ? sourceIcon.aliases : [];
+
+    icons[key] = {
+      file: `images/fab/${filename}`,
+      labels: { en, "pt-BR": ptBR },
+    };
+    iconOrder.push(key);
+
+    for (const aliasValue of aliases) {
+      const alias = requiredString(aliasValue, "alias", `FAB icon ${key}`);
+      if (!/^[a-z][a-z-]*$/.test(alias)) {
+        throw new Error(`Invalid Flesh and Blood icon alias: ${alias}`);
+      }
+      if (sourceIcons[alias] || iconAliases[alias]) {
+        throw new Error(`Duplicate Flesh and Blood icon key or alias: ${alias}`);
+      }
+      iconAliases[alias] = key;
+    }
+  }
+
+  return {
+    icons,
+    iconAliases,
+    iconOrder,
+    supportedIconKeys: [...iconOrder, ...Object.keys(iconAliases)],
+  };
+}
+
 export function buildCatalog(sourceCards, source) {
   if (!Array.isArray(sourceCards)) {
     throw new Error("The upstream card payload must be an array");
@@ -139,6 +192,7 @@ export function buildCatalog(sourceCards, source) {
       ref: requiredString(source.ref, "ref", "FAB source"),
       cardsPath: requiredString(source.cardsPath, "cardsPath", "FAB source"),
     },
+    ...buildIconCatalog(source.icons),
     cards,
   };
 }

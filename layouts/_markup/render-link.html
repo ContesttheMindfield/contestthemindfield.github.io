@@ -8,7 +8,7 @@
         {{- errorf "Invalid Flesh and Blood card reference %q in %s" .Destination $page.File.Path -}}
     {{- end -}}
     {{- $slug := index $parts 0 -}}
-    {{- $catalog := site.Data.fab.cards -}}
+    {{- $catalog := hugo.Data.fab.cards -}}
     {{- $card := index $catalog.cards $slug -}}
     {{- if not $card -}}
         {{- errorf "Unknown Flesh and Blood card slug %q in %s; run npm run fab:sync or correct the reference" $slug $page.File.Path -}}
@@ -59,20 +59,18 @@
 {{- else if strings.HasPrefix .Destination $iconMarker -}}
     {{- $page := .PageInner -}}
     {{- $name := strings.TrimPrefix $iconMarker .Destination -}}
-    {{- $icons := dict
-        "power" (dict "file" "images/fab/icon_p.png" "label" (i18n "fab_icon_power"))
-        "life" (dict "file" "images/fab/icon_h.png" "label" (i18n "fab_icon_life"))
-        "resource" (dict "file" "images/fab/icon_r.png" "label" (i18n "fab_icon_resource"))
-    -}}
-    {{- $icon := index $icons $name -}}
+    {{- $catalog := hugo.Data.fab.cards -}}
+    {{- $canonical := default $name (index $catalog.iconAliases $name) -}}
+    {{- $icon := index $catalog.icons $canonical -}}
     {{- if not $icon -}}
-        {{- errorf "Unknown Flesh and Blood icon %q in %s; supported icons are power, life, and resource" $name $page.File.Path -}}
+        {{- errorf "Unknown Flesh and Blood icon %q in %s; supported icons are %s" $name $page.File.Path (delimit $catalog.supportedIconKeys ", ") -}}
     {{- end -}}
+    {{- $label := i18n (printf "fab_icon_%s" $canonical) -}}
     <img
         class="fab-inline-icon"
         src="{{ $icon.file | relURL }}"
-        alt="{{ $icon.label }}"
-        title="{{ $icon.label }}"
+        alt="{{ $label }}"
+        title="{{ $label }}"
         width="20"
         height="20"
         decoding="async"

@@ -7,15 +7,15 @@ import test from "node:test";
 
 const projectRoot = resolve(import.meta.dirname, "..");
 
-async function render(body) {
+async function render(body, language = "en") {
   const temporaryRoot = await mkdtemp(join(tmpdir(), "mindfield-fab-test-"));
   const contentRoot = join(temporaryRoot, "content");
-  const articleDirectory = join(contentRoot, "en", "articles", "fab-references");
+  const articleDirectory = join(contentRoot, language, "articles", "fab-references");
   const outputDirectory = join(temporaryRoot, "public");
   const configDirectory = join(temporaryRoot, "config");
   const environmentConfigDirectory = join(configDirectory, "fab-test");
   await mkdir(articleDirectory, { recursive: true });
-  await mkdir(join(contentRoot, "pt-br"), { recursive: true });
+  await mkdir(join(contentRoot, language === "en" ? "pt-br" : "en"), { recursive: true });
   await cp(resolve(projectRoot, "config", "_default"), join(configDirectory, "_default"), {
     recursive: true,
   });
@@ -56,8 +56,8 @@ async function render(body) {
   };
 }
 
-async function withRender(body, callback) {
-  const result = await render(body);
+async function withRender(body, callback, language = "en") {
+  const result = await render(body, language);
   try {
     await callback(result);
   } finally {
@@ -65,12 +65,14 @@ async function withRender(body, callback) {
   }
 }
 
-test("Hugo renders cards, a printing override, icons, and attribution", async () => {
+test("Hugo renders cards, a printing override, every icon, and attribution", async () => {
   await withRender(
     [
       "[Aurora, Shooting Star](#fab-card:aurora-shooting-star)",
       "[Aurora AST001](#fab-card:aurora-shooting-star@AST001)",
-      "[Power](#fab-icon:power) [Life](#fab-icon:life) [Resource](#fab-icon:resource)",
+      "[Power](#fab-icon:power) [Defense](#fab-icon:defense) [Armor](#fab-icon:armor)",
+      "[Life](#fab-icon:life) [Intellect](#fab-icon:intellect) [Resource](#fab-icon:resource)",
+      "[Chi](#fab-icon:chi) [Tap](#fab-icon:tap) [Untap](#fab-icon:untap)",
     ].join("\n\n"),
     async ({ status, output, outputDirectory }) => {
       assert.equal(status, 0, output);
@@ -79,13 +81,56 @@ test("Hugo renders cards, a printing override, icons, and attribution", async ()
       assert.match(html, /data-fab-card-trigger/);
       assert.match(html, /AST001\.webp/);
       assert.match(html, /class="fab-inline-icon"/);
-      assert.match(html, /icon_p\.png/);
-      assert.match(html, /icon_h\.png/);
-      assert.match(html, /icon_r\.png/);
+      for (const filename of [
+        "icon_p.png",
+        "icon_d.png",
+        "icon_h.png",
+        "icon_i.png",
+        "icon_r.png",
+        "icon_c.png",
+        "icon_t.png",
+        "icon_u.png",
+      ]) {
+        assert.match(html, new RegExp(filename.replace(".", "\\.")));
+      }
+      for (const label of ["Power", "Defense", "Life", "Intellect", "Resource", "Chi", "Tap", "Untap"]) {
+        assert.match(html, new RegExp(`alt="${label}"`));
+      }
+      assert.equal((html.match(/icon_d\.png/g) || []).length, 2, "armor should reuse defense");
+      assert.match(html, /class="fab-inline-icon"[\s\S]*?width="20"[\s\S]*?height="20"/);
       assert.match(html, /Card images and game symbols © Legend Story Studios\./);
       assert.doesNotMatch(html, /#fab-(?:card|icon):/);
     },
   );
+});
+
+test("Hugo renders Portuguese accessible icon labels", async () => {
+  await withRender(
+    [
+      "[Defense](#fab-icon:defense)",
+      "[Intellect](#fab-icon:intellect)",
+      "[Tap](#fab-icon:tap)",
+      "[Untap](#fab-icon:untap)",
+    ].join(" "),
+    async ({ status, output, outputDirectory }) => {
+      assert.equal(status, 0, output);
+      const htmlPath = join(outputDirectory, "pt-br", "articles", "fab-references", "index.html");
+      const html = await readFile(htmlPath, "utf8");
+      for (const label of ["Defesa", "Intelecto", "Virar", "Desvirar"]) {
+        assert.match(html, new RegExp(`alt="${label}"`));
+      }
+    },
+    "pt-br",
+  );
+});
+
+test("reader and Sveltia preview styles keep FAB icons at text height", async () => {
+  const [readerCss, previewCss] = await Promise.all([
+    readFile(resolve(projectRoot, "assets/css/custom.css"), "utf8"),
+    readFile(resolve(projectRoot, "static/admin/preview.css"), "utf8"),
+  ]);
+  assert.match(readerCss, /img\.fab-inline-icon[\s\S]*?width:\s*1em;[\s\S]*?height:\s*1em;/);
+  assert.match(previewCss, /\.fab-inline-icon-preview[\s\S]*?width:\s*1em;[\s\S]*?height:\s*1em;/);
 });
 
 for (const scenario of [
@@ -101,8 +146,8 @@ for (const scenario of [
   },
   {
     name: "unknown icons",
-    body: "[Defense](#fab-icon:defense)",
-    error: /Unknown Flesh and Blood icon/,
+    body: "[Action point](#fab-icon:action-point)",
+    error: /Unknown Flesh and Blood icon[\s\S]*supported icons are power, defense, life, intellect, resource, chi, tap, untap, armor/,
   },
 ]) {
   test(`Hugo rejects ${scenario.name}`, async () => {

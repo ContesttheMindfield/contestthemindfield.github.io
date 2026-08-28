@@ -33,11 +33,26 @@
 [fab_icon_power]
   other = 'Power'
 
+[fab_icon_defense]
+  other = 'Defense'
+
 [fab_icon_life]
   other = 'Life'
 
+[fab_icon_intellect]
+  other = 'Intellect'
+
 [fab_icon_resource]
   other = 'Resource'
+
+[fab_icon_chi]
+  other = 'Chi'
+
+[fab_icon_tap]
+  other = 'Tap'
+
+[fab_icon_untap]
+  other = 'Untap'
 
 [fab_copyright]
   other = 'Card images and game symbols © Legend Story Studios.'

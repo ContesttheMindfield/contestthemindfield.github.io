@@ -14,9 +14,21 @@
     <script src="/admin/github-auth-retry.js"></script>
     <!-- Track the latest Sveltia CMS release from the official npm package. -->
     <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
+    <script src="/admin/fab-editor.js"></script>
     <script src="/admin/preview.js"></script>
     <script>
-      window.CMS.init();
+      if (window.FabEditor && window.FAB_CATALOG_PROMISE) {
+        window.FabEditor.initializeFabCms(
+          window.CMS,
+          window.FAB_CATALOG_PROMISE,
+          window.console
+        );
+      } else {
+        console.error(
+          "FAB editor buttons are unavailable; continuing with manual Markdown editing."
+        );
+        window.CMS.init();
+      }
     </script>
   </body>
 </html>

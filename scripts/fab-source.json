@@ -5,15 +5,68 @@
   "icons": {
     "power": {
       "source": "https://rules.fabtcg.com/en/assets/images/icon_p.png",
-      "filename": "icon_p.png"
+      "filename": "icon_p.png",
+      "labels": {
+        "en": "Power",
+        "pt-BR": "Poder"
+      }
+    },
+    "defense": {
+      "source": "https://rules.fabtcg.com/en/assets/images/icon_d.png",
+      "filename": "icon_d.png",
+      "aliases": ["armor"],
+      "labels": {
+        "en": "Defense",
+        "pt-BR": "Defesa"
+      }
     },
     "life": {
       "source": "https://rules.fabtcg.com/en/assets/images/icon_h.png",
-      "filename": "icon_h.png"
+      "filename": "icon_h.png",
+      "labels": {
+        "en": "Life",
+        "pt-BR": "Vida"
+      }
+    },
+    "intellect": {
+      "source": "https://rules.fabtcg.com/en/assets/images/icon_i.png",
+      "filename": "icon_i.png",
+      "labels": {
+        "en": "Intellect",
+        "pt-BR": "Intelecto"
+      }
     },
     "resource": {
       "source": "https://rules.fabtcg.com/en/assets/images/icon_r.png",
-      "filename": "icon_r.png"
+      "filename": "icon_r.png",
+      "labels": {
+        "en": "Resource",
+        "pt-BR": "Recurso"
+      }
+    },
+    "chi": {
+      "source": "https://rules.fabtcg.com/en/assets/images/icon_c.png",
+      "filename": "icon_c.png",
+      "labels": {
+        "en": "Chi",
+        "pt-BR": "Chi"
+      }
+    },
+    "tap": {
+      "source": "https://rules.fabtcg.com/en/assets/images/icon_t.png",
+      "filename": "icon_t.png",
+      "labels": {
+        "en": "Tap",
+        "pt-BR": "Virar"
+      }
+    },
+    "untap": {
+      "source": "https://rules.fabtcg.com/en/assets/images/icon_u.png",
+      "filename": "icon_u.png",
+      "labels": {
+        "en": "Untap",
+        "pt-BR": "Desvirar"
+      }
     }
   }
 }

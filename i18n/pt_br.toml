@@ -60,11 +60,26 @@
 [fab_icon_power]
   other = 'Poder'
 
+[fab_icon_defense]
+  other = 'Defesa'
+
 [fab_icon_life]
   other = 'Vida'
 
+[fab_icon_intellect]
+  other = 'Intelecto'
+
 [fab_icon_resource]
   other = 'Recurso'
+
+[fab_icon_chi]
+  other = 'Chi'
+
+[fab_icon_tap]
+  other = 'Virar'
+
+[fab_icon_untap]
+  other = 'Desvirar'
 
 [fab_copyright]
   other = 'Imagens das cartas e símbolos do jogo © Legend Story Studios.'

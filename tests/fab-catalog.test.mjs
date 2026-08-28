@@ -5,6 +5,7 @@ import test from "node:test";
 
 import {
   buildCatalog,
+  buildIconCatalog,
   cardSlug,
   compactPrintings,
   slugify,
@@ -99,6 +100,27 @@ test("duplicate generated slugs fail catalog generation", () => {
   );
 });
 
+test("the icon catalog contains eight canonical symbols and the armor alias", async () => {
+  const config = JSON.parse(
+    await readFile(resolve(projectRoot, "scripts/fab-source.json"), "utf8"),
+  );
+  const catalog = buildIconCatalog(config.icons);
+
+  assert.deepEqual(catalog.iconOrder, [
+    "power",
+    "defense",
+    "life",
+    "intellect",
+    "resource",
+    "chi",
+    "tap",
+    "untap",
+  ]);
+  assert.deepEqual(catalog.iconAliases, { armor: "defense" });
+  assert.deepEqual(catalog.supportedIconKeys, [...catalog.iconOrder, "armor"]);
+  assert.equal(catalog.icons.defense.labels["pt-BR"], "Defesa");
+});
+
 test("generated Hugo and Sveltia catalogs stay identical", async () => {
   const hugo = await readFile(resolve(projectRoot, "data/fab/cards.json"), "utf8");
   const sveltia = await readFile(resolve(projectRoot, "static/admin/fab-cards.json"), "utf8");
@@ -126,19 +148,34 @@ test("README card and icon examples resolve against the generated catalog", asyn
     }
   }
 
-  const supportedIcons = new Set(["power", "life", "resource"]);
+  const supportedIcons = new Set(catalog.supportedIconKeys);
   const iconReferences = Array.from(readme.matchAll(/#fab-icon:([a-z-]+)/g));
-  assert.equal(iconReferences.length, 3);
+  assert.ok(iconReferences.length >= supportedIcons.size);
   for (const [, icon] of iconReferences) {
     assert.ok(supportedIcons.has(icon), `README icon should be supported: ${icon}`);
   }
+  assert.deepEqual(
+    new Set(iconReferences.map(([, icon]) => icon)),
+    supportedIcons,
+    "README should document every supported icon key",
+  );
 });
 
-test("the three local icon files are non-empty PNG images", async () => {
-  for (const filename of ["icon_p.png", "icon_h.png", "icon_r.png"]) {
-    const path = resolve(projectRoot, "static/images/fab", filename);
+test("all configured icon sources are official and local files are valid PNG images", async () => {
+  const source = JSON.parse(
+    await readFile(resolve(projectRoot, "scripts/fab-source.json"), "utf8"),
+  );
+  const catalog = JSON.parse(
+    await readFile(resolve(projectRoot, "data/fab/cards.json"), "utf8"),
+  );
+
+  assert.deepEqual(catalog.iconOrder, Object.keys(source.icons));
+  for (const [key, icon] of Object.entries(source.icons)) {
+    assert.match(icon.source, /^https:\/\/rules\.fabtcg\.com\/en\/assets\/images\/icon_[a-z]\.png$/);
+    assert.equal(catalog.icons[key].file, `images/fab/${icon.filename}`);
+    const path = resolve(projectRoot, "static", catalog.icons[key].file);
     const [metadata, contents] = await Promise.all([stat(path), readFile(path)]);
-    assert.ok(metadata.size > 1000, `${filename} should not be empty`);
+    assert.ok(metadata.size > 1000, `${icon.filename} should not be empty`);
     assert.deepEqual(Array.from(contents.subarray(0, 8)), [137, 80, 78, 71, 13, 10, 26, 10]);
   }
 });

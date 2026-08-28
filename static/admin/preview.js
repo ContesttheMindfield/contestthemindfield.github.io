@@ -10,11 +10,8 @@
         throw new Error("Unable to load the Flesh and Blood card catalog.");
       }
       return response.json();
-    })
-    .catch(function (error) {
-      console.error(error);
-      return null;
     });
+  window.FAB_CATALOG_PROMISE = fabCatalogPromise;
 
   if (!window.CMS || !h || !createClass) {
     return;
@@ -242,13 +239,9 @@
     };
   }
 
-  function enhanceFabIcon(anchor, reference, locale) {
-    var icons = {
-      power: { file: "/images/fab/icon_p.png", en: "Power", pt: "Poder" },
-      life: { file: "/images/fab/icon_h.png", en: "Life", pt: "Vida" },
-      resource: { file: "/images/fab/icon_r.png", en: "Resource", pt: "Recurso" }
-    };
-    var icon = icons[reference.name];
+  function enhanceFabIcon(anchor, reference, catalog, locale) {
+    var resolved = window.FabEditor && window.FabEditor.resolveIcon(catalog, reference.name);
+    var icon = resolved && resolved.icon;
 
     if (!icon) {
       anchor.classList.add("fab-reference-error");
@@ -257,9 +250,12 @@
     }
 
     anchor.classList.add("fab-inline-icon-preview");
-    anchor.style.setProperty("--fab-icon-image", 'url("' + icon.file + '")');
+    anchor.style.setProperty("--fab-icon-image", 'url("/' + icon.file + '")');
     anchor.setAttribute("role", "img");
-    anchor.setAttribute("aria-label", locale === "pt-BR" ? icon.pt : icon.en);
+    anchor.setAttribute(
+      "aria-label",
+      icon.labels[locale] || icon.labels.en || resolved.key
+    );
     anchor.setAttribute("tabindex", "-1");
     anchor.onclick = function (event) {
       event.preventDefault();
@@ -308,9 +304,11 @@
           ordinal += 1;
           enhanceFabCard(anchor, reference, catalog, locale, ordinal);
         } else {
-          enhanceFabIcon(anchor, reference, locale);
+          enhanceFabIcon(anchor, reference, catalog, locale);
         }
       });
+    }).catch(function () {
+      // CMS initialization reports catalog failures once and keeps manual Markdown available.
     });
   }
 

@@ -4,6 +4,88 @@
     "ref": "e56071b41b6e784b652eeada1ff86e6d8538f554",
     "cardsPath": "json/english/card.json"
   },
+  "icons": {
+    "power": {
+      "file": "images/fab/icon_p.png",
+      "labels": {
+        "en": "Power",
+        "pt-BR": "Poder"
+      }
+    },
+    "defense": {
+      "file": "images/fab/icon_d.png",
+      "labels": {
+        "en": "Defense",
+        "pt-BR": "Defesa"
+      }
+    },
+    "life": {
+      "file": "images/fab/icon_h.png",
+      "labels": {
+        "en": "Life",
+        "pt-BR": "Vida"
+      }
+    },
+    "intellect": {
+      "file": "images/fab/icon_i.png",
+      "labels": {
+        "en": "Intellect",
+        "pt-BR": "Intelecto"
+      }
+    },
+    "resource": {
+      "file": "images/fab/icon_r.png",
+      "labels": {
+        "en": "Resource",
+        "pt-BR": "Recurso"
+      }
+    },
+    "chi": {
+      "file": "images/fab/icon_c.png",
+      "labels": {
+        "en": "Chi",
+        "pt-BR": "Chi"
+      }
+    },
+    "tap": {
+      "file": "images/fab/icon_t.png",
+      "labels": {
+        "en": "Tap",
+        "pt-BR": "Virar"
+      }
+    },
+    "untap": {
+      "file": "images/fab/icon_u.png",
+      "labels": {
+        "en": "Untap",
+        "pt-BR": "Desvirar"
+      }
+    }
+  },
+  "iconAliases": {
+    "armor": "defense"
+  },
+  "iconOrder": [
+    "power",
+    "defense",
+    "life",
+    "intellect",
+    "resource",
+    "chi",
+    "tap",
+    "untap"
+  ],
+  "supportedIconKeys": [
+    "power",
+    "defense",
+    "life",
+    "intellect",
+    "resource",
+    "chi",
+    "tap",
+    "untap",
+    "armor"
+  ],
   "cards": {
     "10-000-year-reunion-red": {
       "id": "FM9T9Dg8bj9h9MW7k9HCQ",

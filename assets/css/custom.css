@@ -276,7 +276,7 @@ main#page.page #content > p {
   overflow: visible;
   transform: translate(-50%, -50%);
   transition: opacity 120ms ease, visibility 120ms ease;
-  box-shadow: 0 0.8rem 2.5rem rgb(0 0 0 / 35%);
+  box-shadow: none;
   background: transparent;
   visibility: hidden;
   opacity: 0;
@@ -318,11 +318,13 @@ main#page.page #content > p {
 
 .content p img.fab-inline-icon {
   display: inline-block;
+  border: 0;
   width: 1em;
   max-width: 1em;
   height: 1em;
   margin-inline: 0.06em;
   object-fit: contain;
+  text-decoration: none;
   vertical-align: -0.12em;
 }
 

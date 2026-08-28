@@ -170,6 +170,7 @@ collections:
       - label: Body
         name: body
         widget: markdown
+        editor_components: [image, fab-card, fab-icon]
 
   - name: pt_br_articles
     label: Artigos — Português (Brasil)
@@ -315,6 +316,7 @@ collections:
       - label: Conteúdo
         name: body
         widget: markdown
+        editor_components: [image, fab-card, fab-icon]
 
   - name: en_authors
     label: Authors — English
