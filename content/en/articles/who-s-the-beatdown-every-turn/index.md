@@ -9,7 +9,7 @@ authors:
 series:
   - The Anatomy of a Flesh and Blood Card
 toc: false
-cover: pasted-image-1787803774036.png
+cover: yugin-maffioli-flesh-and-blood-2022-legend-story-studios.jpg
 alt: Barraging Beatdown card art
 math: false
 mathJax: false
@@ -42,6 +42,7 @@ Despite doing so instinctively all along, a few months ago I got into a situatio
 A few turns in, that plan stopped making sense. My opponent's 80 was clearly put together to survive a long game, and when he played a [Prismatic Lens](#fab-card:prismatic-lens-yellow), a card I actually had to stop and read, I realized fatigue would only delay the loss, not prevent it. So I pivoted to an all-in aggressive stance, the last thing I expected to do with this deck.
 
 ![](486472818_1392536621717749_2750642544442928284_n.jpg)
+
 
 His deck ran heavy on items to support that plan, which meant he couldn't block efficiently. Once he dropped to 16 [Life](#fab-icon:life), I stopped considering value at all and started playing to end the game before he could. On his next turn I watched my Life [Life](#fab-icon:life) total diminish from full to barely nothing while holding a full grip of four. I came back with [Channel the Millennium Tree](#fab-card:channel-the-millennium-tree-red) into [Waning Moon](#fab-card:waning-moon) into [Felling of the Crown](#fab-card:felling-of-the-crown-red), dropping him to 3 [Life](#fab-icon:life).  It wasn't the safest or the most efficient use of those cards, I'd have gotten more out of them by simply blocking, but by then the only math that mattered was the one that ended the game. Any spell left in my subsequent hand would have finished him. As it happened, and somewhat ironically, I only had one.
 
