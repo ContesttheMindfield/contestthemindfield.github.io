@@ -53,6 +53,17 @@ test("card-picker options are unique, searchable labels with defaults first", ()
   assert.ok(options.some(({ label }) => /Pummel — Red — WTR206/.test(label)));
 });
 
+test("card search stays empty until queried and caps lazy results", () => {
+  assert.deepEqual(FabEditor.searchCardOptions(catalog, "", 30), []);
+  assert.deepEqual(FabEditor.searchCardOptions(catalog, "a", 30), []);
+  assert.deepEqual(
+    FabEditor.searchCardOptions(catalog, "aurora", 30).map(({ value }) => value),
+    ["aurora-shooting-star@AST001", "aurora-shooting-star@LGS999"],
+  );
+  assert.equal(FabEditor.searchCardOptions(catalog, "red", 1)[0].value, "pummel-red@WTR206");
+  assert.equal(FabEditor.searchCardOptions(catalog, "lgs999", 30)[0].value, "aurora-shooting-star@LGS999");
+});
+
 test("card references serialize defaults, alternates, custom text, and escaping", () => {
   assert.equal(
     FabEditor.cardToBlock({ card: "aurora-shooting-star@AST001", text: "" }, catalog),
@@ -126,13 +137,18 @@ test("Sveltia components use native toolbar buttons and dialog mode", () => {
     assert.ok(component.pattern instanceof RegExp);
   }
   assert.equal(components[0].icon, "style");
-  assert.equal(components[0].fields[0].dropdown_threshold, 0);
+  assert.equal(components[0].fields[0].widget, "fab-card-search");
+  assert.equal(components[0].fields[0].options, undefined);
 });
 
 test("CMS waits for the catalog, registers both buttons, and initializes", async () => {
   const registered = [];
+  const fieldTypes = [];
   var initialized = 0;
   const CMS = {
+    registerFieldType(name) {
+      fieldTypes.push(name);
+    },
     registerEditorComponent(component) {
       registered.push(component.id);
     },
@@ -140,9 +156,14 @@ test("CMS waits for the catalog, registers both buttons, and initializes", async
       initialized += 1;
     },
   };
+  const runtime = {
+    createClass: (definition) => definition,
+    h: (...args) => ({ args }),
+  };
 
-  const result = await FabEditor.initializeFabCms(CMS, Promise.resolve(catalog), console);
+  const result = await FabEditor.initializeFabCms(CMS, Promise.resolve(catalog), console, runtime);
   assert.equal(result, true);
+  assert.deepEqual(fieldTypes, ["fab-card-search"]);
   assert.deepEqual(registered, ["fab-card", "fab-icon"]);
   assert.equal(initialized, 1);
 });

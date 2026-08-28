@@ -57,7 +57,7 @@ The media archetype includes guidance for optional covers and alt text, audio, m
 
 Sveltia's article editor has two Flesh and Blood buttons in the rich-text toolbar:
 
-- **FAB Card** opens a searchable **Card and printing** selector. Place the cursor where the reference belongs, choose an option, optionally change **Display text**, and confirm the dialog. Search matches the card's English name, pitch color, or printing ID. Options appear as `Card Name — Color — PRINTING_ID`; the catalog's preferred printing is listed first and marked `(default)`.
+- **FAB Card** opens a lazy **Card and printing** search. Place the cursor where the reference belongs, type at least two characters of the card's English name, pitch color, or printing ID, choose one of the matching results, optionally change **Display text**, and confirm the dialog. The editor never renders the complete catalog at once; it shows at most 30 matches after you type. Results appear as `Card Name — Color — PRINTING_ID`; the catalog's preferred printing is listed first and marked `(default)`.
 - **FAB Icon** opens a compact list of all supported game symbols. Choose a symbol, optionally change **Source text**, and confirm the dialog.
 
 Inserted references appear as compact inline components in the rich-text editor and as working card previews or symbols in Sveltia's article preview. Click an existing component to reopen its dialog and change the card, printing, symbol, or source text. These custom buttons are disabled while the Markdown field is in raw mode; switch back to rich-text mode to use them, or type the documented syntax directly in raw mode.

@@ -108,12 +108,13 @@
                         {{- $authorListClass := cond (eq (len .) 1) "inline" "delimiter" }}
                         <ul class="author-names {{ $authorListClass }} presentation" aria-label="{{ i18n "authors" (len .) }}">
                             {{- range . }}
-                                {{- $flair := .Params.flair }}
+                                {{- $flair := strings.TrimSpace (default "" .Params.flair) }}
+                                {{- $showFlair := and $flair (ne (lower $flair) (lower .LinkTitle)) }}
                                 <li>
                                     <a
-                                        class="author-name{{ with $flair }} has-desc{{ end }}"
+                                        class="author-name{{ if $showFlair }} has-desc{{ end }}"
                                         href="{{ .Permalink }}"
-                                        {{- with $flair }} aria-description="{{ . }}"{{ end -}}
+                                        {{- if $showFlair }} aria-description="{{ $flair }}"{{ end -}}
                                     >{{ .LinkTitle }}</a>
                                 </li>
                             {{- end }}

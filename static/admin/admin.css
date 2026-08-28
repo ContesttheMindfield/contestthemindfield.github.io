@@ -4,3 +4,66 @@
   overflow: auto !important;
   resize: vertical !important;
 }
+
+/* Keep Sveltia's inline FAB component chips from adding large word gaps. */
+[data-field-type="markdown"][data-key-path="body"]
+  .lexical-root p
+  :is(button, [role="button"][contenteditable="false"]) {
+  display: inline !important;
+  margin: 0 !important;
+  padding-block: 0 !important;
+  padding-inline: 0.08em !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  line-height: inherit !important;
+  vertical-align: baseline !important;
+}
+
+.fab-card-search {
+  display: grid;
+  gap: 0.5rem;
+  min-width: min(32rem, 75vw);
+}
+
+.fab-card-search__input {
+  width: 100%;
+}
+
+.fab-card-search__selected {
+  overflow-wrap: anywhere;
+  font-size: 0.9em;
+}
+
+.fab-card-search__status {
+  color: var(--sui-muted-foreground-color, GrayText);
+  font-size: 0.82em;
+}
+
+.fab-card-search__results {
+  display: grid;
+  max-height: min(20rem, 45vh);
+  overflow-y: auto;
+  border: 1px solid var(--sui-textbox-border-color, GrayText);
+  border-radius: 0.35rem;
+  background: var(--sui-control-background-color, Canvas);
+}
+
+.fab-card-search__result {
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+  padding: 0.6rem 0.75rem;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.fab-card-search__result:last-child {
+  border-bottom: 0;
+}
+
+.fab-card-search__result:is(:hover, :focus-visible),
+.fab-card-search__result[aria-selected="true"] {
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}

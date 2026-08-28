@@ -1,14 +1,14 @@
 (function (root, factory) {
   "use strict";
 
-  var api = factory();
+  var api = factory(root);
   if (typeof module === "object" && module.exports) {
     module.exports = api;
   }
   if (root) {
     root.FabEditor = api;
   }
-})(typeof window !== "undefined" ? window : null, function () {
+})(typeof window !== "undefined" ? window : null, function (root) {
   "use strict";
 
   var CARD_PATTERN = /\[((?:\\.|[^\]\\\n])*)\]\(#fab-card:([a-z0-9-]+)(?:@([A-Z0-9-]+))?\)/;
@@ -46,6 +46,15 @@
     });
   }
 
+  function cardOption(slug, card, printing) {
+    var color = card.color || "No color";
+    var label = card.name + " — " + color + " — " + printing.id;
+    if (printing.id === card.defaultPrinting) {
+      label += " (default)";
+    }
+    return { label: label, value: slug + "@" + printing.id };
+  }
+
   function buildCardOptions(catalog) {
     var cards = catalog && catalog.cards ? catalog.cards : {};
     var entries = Object.keys(cards).map(function (slug) {
@@ -70,15 +79,88 @@
         }
         values.add(value);
 
-        var color = entry.card.color || "No color";
-        var label = entry.card.name + " — " + color + " — " + printing.id;
-        if (printing.id === entry.card.defaultPrinting) {
-          label += " (default)";
-        }
-        options.push({ label: label, value: value });
+        options.push(cardOption(entry.slug, entry.card, printing));
       });
     });
     return options;
+  }
+
+  function normalizeSearch(value) {
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .trim();
+  }
+
+  function searchCardOptions(catalog, query, limit) {
+    var normalized = normalizeSearch(query);
+    var maxResults = Number.isInteger(limit) && limit > 0 ? limit : 30;
+    if (normalized.length < 2) {
+      return [];
+    }
+
+    var terms = normalized.split(/\s+/).filter(Boolean);
+    var cards = catalog && catalog.cards ? catalog.cards : {};
+    var matches = [];
+
+    Object.keys(cards).forEach(function (slug) {
+      var card = cards[slug];
+      var cardName = normalizeSearch(card.name);
+      var cardColor = normalizeSearch(card.color);
+      var cardText = [cardName, cardColor, normalizeSearch(slug)].join(" ");
+
+      orderedPrintings(card).forEach(function (printing, printingIndex) {
+        var printingId = normalizeSearch(printing.id);
+        var haystack = cardText + " " + printingId;
+        if (!terms.every(function (term) { return haystack.indexOf(term) !== -1; })) {
+          return;
+        }
+
+        var rank = 4;
+        if (printingId === normalized) {
+          rank = 0;
+        } else if (cardName === normalized) {
+          rank = 1;
+        } else if (cardName.indexOf(normalized) === 0) {
+          rank = 2;
+        } else if (cardName.indexOf(normalized) !== -1) {
+          rank = 3;
+        }
+
+        matches.push({
+          option: cardOption(slug, card, printing),
+          rank: rank,
+          cardName: cardName,
+          printingIndex: printingIndex,
+          printingId: printingId
+        });
+      });
+    });
+
+    matches.sort(function (left, right) {
+      return (
+        left.rank - right.rank ||
+        left.cardName.localeCompare(right.cardName, "en") ||
+        left.printingIndex - right.printingIndex ||
+        left.printingId.localeCompare(right.printingId, "en")
+      );
+    });
+
+    return matches.slice(0, maxResults).map(function (match) {
+      return match.option;
+    });
+  }
+
+  function selectedCardOption(catalog, value) {
+    var selection = parseCardSelection(value);
+    var card = selection && catalog.cards ? catalog.cards[selection.slug] : null;
+    var printing = card && Array.isArray(card.printings)
+      ? card.printings.find(function (candidate) {
+          return candidate.id === selection.printing;
+        })
+      : null;
+    return card && printing ? cardOption(selection.slug, card, printing) : null;
   }
 
   function resolveIcon(catalog, name) {
@@ -159,8 +241,136 @@
     return "[" + escapeMarkdownLabel(label) + "](#fab-icon:" + resolved.key + ")";
   }
 
+  function createCardSearchControl(catalog, runtime) {
+    var h = runtime && runtime.h;
+    var createClass = runtime && runtime.createClass;
+    if (typeof h !== "function" || typeof createClass !== "function") {
+      throw new Error("Sveltia CMS React compatibility helpers are unavailable.");
+    }
+
+    return createClass({
+      getInitialState: function () {
+        return { query: "", results: [], pending: false };
+      },
+
+      componentWillUnmount: function () {
+        clearTimeout(this.searchTimer);
+      },
+
+      isValid: function (value) {
+        return selectedCardOption(catalog, value)
+          ? true
+          : { error: { message: "Search for and choose a card printing." } };
+      },
+
+      runSearch: function (query) {
+        this.setState({
+          pending: false,
+          results: searchCardOptions(catalog, query, 30)
+        });
+      },
+
+      handleInput: function (event) {
+        var query = event.target.value;
+        clearTimeout(this.searchTimer);
+        if (normalizeSearch(query).length < 2) {
+          this.setState({ query: query, results: [], pending: false });
+          return;
+        }
+
+        this.setState({ query: query, results: [], pending: true });
+        this.searchTimer = setTimeout(function () {
+          this.runSearch(query);
+        }.bind(this), 120);
+      },
+
+      handleKeyDown: function (event) {
+        if (event.key === "Escape") {
+          clearTimeout(this.searchTimer);
+          this.setState({ results: [], pending: false });
+          return;
+        }
+        if (event.key === "Enter" && this.state.results.length) {
+          event.preventDefault();
+          this.choose(this.state.results[0]);
+        }
+      },
+
+      choose: function (option) {
+        clearTimeout(this.searchTimer);
+        this.props.onChange(option.value);
+        this.setState({ query: "", results: [], pending: false });
+      },
+
+      render: function () {
+        var selected = selectedCardOption(catalog, this.props.value);
+        var queryLength = normalizeSearch(this.state.query).length;
+        var resultId = this.props.forID + "-results";
+        var hintId = this.props.forID + "-hint";
+        var inputClass = [this.props.classNameWrapper, "fab-card-search__input"]
+          .filter(Boolean)
+          .join(" ");
+        var status = queryLength < 2
+          ? "Type at least 2 characters."
+          : this.state.pending
+            ? "Searching…"
+            : this.state.results.length
+              ? this.state.results.length + " result" + (this.state.results.length === 1 ? "" : "s")
+              : "No matching cards.";
+
+        return h(
+          "div",
+          { className: "fab-card-search" },
+          selected
+            ? h(
+                "div",
+                { className: "fab-card-search__selected", role: "status" },
+                h("strong", {}, "Selected: "),
+                selected.label
+              )
+            : null,
+          h("input", {
+            id: this.props.forID,
+            className: inputClass,
+            type: "search",
+            value: this.state.query,
+            placeholder: "Search by name, color, or printing ID",
+            autoComplete: "off",
+            role: "combobox",
+            "aria-autocomplete": "list",
+            "aria-controls": resultId,
+            "aria-describedby": hintId,
+            "aria-expanded": this.state.results.length > 0,
+            onChange: this.handleInput,
+            onKeyDown: this.handleKeyDown
+          }),
+          h("div", { id: hintId, className: "fab-card-search__status", role: "status" }, status),
+          this.state.results.length
+            ? h(
+                "div",
+                { id: resultId, className: "fab-card-search__results", role: "listbox" },
+                this.state.results.map(function (option) {
+                  return h(
+                    "button",
+                    {
+                      key: option.value,
+                      className: "fab-card-search__result",
+                      type: "button",
+                      role: "option",
+                      "aria-selected": option.value === this.props.value,
+                      onClick: function () { this.choose(option); }.bind(this)
+                    },
+                    option.label
+                  );
+                }.bind(this))
+              )
+            : null
+        );
+      }
+    });
+  }
+
   function editorComponents(catalog) {
-    var cardOptions = buildCardOptions(catalog);
     var iconOptions = buildIconOptions(catalog);
 
     var cardComponent = {
@@ -174,9 +384,7 @@
         {
           name: "card",
           label: "Card and printing",
-          widget: "select",
-          options: cardOptions,
-          dropdown_threshold: 0
+          widget: "fab-card-search"
         },
         {
           name: "text",
@@ -236,14 +444,19 @@
     return [cardComponent, iconComponent];
   }
 
-  function registerFabEditorComponents(CMS, catalog) {
+  function registerFabEditorComponents(CMS, catalog, runtime) {
     if (!CMS || typeof CMS.registerEditorComponent !== "function") {
       throw new Error("Sveltia CMS editor-component API is unavailable.");
+    }
+    if (typeof CMS.registerFieldType !== "function") {
+      throw new Error("Sveltia CMS custom-field API is unavailable.");
     }
     if (!catalog || !catalog.cards || !catalog.icons || !catalog.iconAliases) {
       throw new Error("The local Flesh and Blood catalog is incomplete.");
     }
 
+    var ui = runtime || root;
+    CMS.registerFieldType("fab-card-search", createCardSearchControl(catalog, ui));
     var components = editorComponents(catalog);
     components.forEach(function (component) {
       CMS.registerEditorComponent(component);
@@ -251,14 +464,14 @@
     return components;
   }
 
-  function initializeFabCms(CMS, catalogPromise, logger) {
+  function initializeFabCms(CMS, catalogPromise, logger, runtime) {
     var log = logger && typeof logger.error === "function" ? logger : console;
     return Promise.resolve(catalogPromise)
       .then(function (catalog) {
         if (!catalog) {
           throw new Error("The local Flesh and Blood catalog could not be loaded.");
         }
-        registerFabEditorComponents(CMS, catalog);
+        registerFabEditorComponents(CMS, catalog, runtime);
         return true;
       })
       .catch(function (error) {
@@ -289,6 +502,8 @@
     parseCardSelection: parseCardSelection,
     registerFabEditorComponents: registerFabEditorComponents,
     resolveIcon: resolveIcon,
+    searchCardOptions: searchCardOptions,
+    selectedCardOption: selectedCardOption,
     unescapeMarkdownLabel: unescapeMarkdownLabel
   };
 });
