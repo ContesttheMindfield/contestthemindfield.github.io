@@ -10,7 +10,7 @@ categories:
   - Strategy
 tags:
   - Basics
-  - Begginer
+  - Beginner
 series:
   - The Anatomy of a Flesh and Blood Card
 toc: false
